@@ -4,6 +4,9 @@
 
 #include <iostream>
 
+
+#define LOG(data) std::cout << data << std::endl
+
 double TimeNow();
 
 std::string DoubleToString(double num);

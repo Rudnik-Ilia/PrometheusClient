@@ -1,7 +1,7 @@
 #pragma once
 
 #include "init.hpp"
-#include "../include/anxilary-functions.hpp"
+#include "../include/anxilary_functions.hpp"
 
 class Gauge
 {
@@ -37,7 +37,7 @@ class Gauge
             m_value.fetch_sub(delta);
         }
 
-        void Set(double value)
+        void Set(int64_t value)
         {
             m_value.store(value);
         }
