@@ -1,60 +1,80 @@
 #pragma once
 
+#include <map>
+#include <utility>  
+#include <limits>
+
 #include "init.hpp"
+#include "gauge.hpp"
+#include "../include/counter.hpp"
+#include "../include/anxilary_functions.hpp"
 
+template <class T>
+using BucketsLimit = std::vector<T>;
 
+template<class T = double>
 class Histogram
 {
     public:
-
-        using BucketsLimit = std::vector<double>;
-
-        Histogram(std::vector<std::string> label_values, BucketsLimit): m_label_values(std::move(label_values)){}
-
-        struct Descriptor 
+        Histogram(std::vector<T> bounds, std::vector<std::string> label_values = {}): m_label_values(std::move(label_values)), m_gauge_summ()
         {
-            std::vector<double> bucketBounds;
-        };
+            for(size_t i = 0; i < bounds.size(); ++i)
+            {
+                m_bound_counter.emplace(std::make_pair(bounds[i], std::vector<std::string>{}));
+            }
+            m_bound_counter.emplace(std::make_pair(std::numeric_limits<T>::infinity(), std::vector<std::string>{}));
+        }
 
-        struct Bucket 
-        {
-            double upperBound;
-            std::atomic<double> m_bucket_count{0.0};
-        };
-
-        static std::vector<double> defaultBuckets()
+        void Default()
         {
 
         }
 
-        static std::vector<double> linearBuckets(double start, double width, uint64_t count)
+        void Linear(T start, T step, uint64_t count)
         {
 
         }
 
-        static std::vector<double> exponentialBuckets(double start, double factor, uint64_t count)
+        void Exponential(T start, T factor, uint64_t count)
         {
 
         }
 
-
-        void Observe(double val)
+        void Observe(T value)
         {
-
+            auto iter = m_bound_counter.lower_bound(value);
+            if(iter != m_bound_counter.end())
+            {
+                while (iter != m_bound_counter.end())
+                {
+                    iter->second.Inc();
+                    ++iter;
+                }
+            }
+            m_gauge_summ.Inc(value);
         }
 
-        double _summ()
+        void Show()
         {
-
+            for(auto &iter : m_bound_counter)
+            {
+                LOG(iter.second.GetValue());
+            }
+            LOG(m_gauge_summ.GetValue());
         }
 
-        double _count()
-        {
+        // double _summ()
+        // {
 
-        }
+        // }
+
+        // double _count()
+        // {
+
+        // }
 
     private:
         std::vector<std::string> m_label_values;
-        std::atomic<double> m_sum{0.0};
-        std::vector<Bucket> m_buckets;
+        Gauge<T> m_gauge_summ;
+        std::map<T, Counter<T>> m_bound_counter{};
 };

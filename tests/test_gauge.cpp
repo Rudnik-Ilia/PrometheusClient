@@ -18,12 +18,12 @@ int main()
     LOG(g1->GetValue());
 
     {
-        auto t = g_dur->Duration();
+        auto t = g_dur->Track();
         sleep(3);
     }
     LOG(g_dur->GetValue());
     {
-        auto t = g_dur->Duration();
+        auto t = g_dur->Track();
         sleep(5);
     }
     LOG(g_dur->GetValue());

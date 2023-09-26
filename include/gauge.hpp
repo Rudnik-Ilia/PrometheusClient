@@ -4,7 +4,6 @@
 #include "../include/anxilary_functions.hpp"
 #include "../include/gauge.hpp"
 
-
 typedef std::chrono::hours HOURS;
 typedef std::chrono::minutes MINUTE;
 typedef std::chrono::seconds SECOND;
@@ -32,7 +31,7 @@ class Gauge
                 T m_start;
         };
 
-        Timer Duration()
+        Timer Track()
         {
             return Timer(*this);
         }
