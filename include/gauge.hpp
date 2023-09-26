@@ -2,24 +2,34 @@
 
 #include "init.hpp"
 #include "../include/anxilary_functions.hpp"
+#include "../include/gauge.hpp"
 
+
+typedef std::chrono::hours HOURS;
+typedef std::chrono::minutes MINUTE;
+typedef std::chrono::seconds SECOND;
+typedef std::chrono::milliseconds MILLISEC;
+typedef std::chrono::microseconds  MICROSEC;
+typedef std::chrono::nanoseconds NANOSEC;
+
+template<class T, class Measure = SECOND>
 class Gauge
 {
     public:
-        Gauge(std::vector<std::string> labels_values = {}): m_label_values(std::move(labels_values)){}
+        Gauge(std::vector<std::string> labels_values = {}): m_label_values(std::move(labels_values)), m_value(0){}
         
         class Timer
         {
             public:
-                Timer(Gauge& gauge): m_gauge(gauge), m_start(TimeNow()){}
+                Timer(Gauge<T, Measure>& gauge): m_gauge(gauge), m_start(TimeNow()){}
                 ~Timer()
                 {
                     m_gauge.Set(TimeNow() - m_start);
                 }
 
             private:
-                Gauge& m_gauge;
-                int64_t m_start;
+                Gauge<T, Measure>& m_gauge;
+                T m_start;
         };
 
         Timer Duration()
@@ -27,19 +37,25 @@ class Gauge
             return Timer(*this);
         }
 
-        void Inc(int64_t delta = 1)
+        void Inc(T delta = 1.0)
         {
-            m_value.fetch_add(delta);
+            T current = 0;
+            do
+            {
+                current = m_value.load(std::memory_order_acquire);
+            } 
+            while(!m_value.compare_exchange_weak(current, current + delta));
+            
         }
 
-        void Dec(int64_t delta = 1)
+        void Dec(T delta = 1)
         {
-            m_value.fetch_sub(delta);
+            Inc(-delta);
         }
 
-        void Set(int64_t value)
+        void Set(T value)
         {
-            m_value.store(value);
+            m_value.store(value, std::memory_order_release);
         }
 
         void SetTimeNow()
@@ -47,9 +63,9 @@ class Gauge
             Set(TimeNow());
         }
 
-        int64_t GetValue()
+        T GetValue()
         {
-            return m_value.load();
+            return m_value.load(std::memory_order_release);
         }
 
         std::vector<std::string> GetLabels()
@@ -59,5 +75,14 @@ class Gauge
 
     private:  
         std::vector<std::string> m_label_values;
-        std::atomic<int64_t> m_value{0};  
+        std::atomic<T> m_value; 
+
+        static T TimeNow()
+        {
+            auto currentTime = std::chrono::high_resolution_clock::now();
+            Measure secondsSinceEpoch = std::chrono::duration_cast<Measure>(currentTime.time_since_epoch());
+            T unixTime = secondsSinceEpoch.count();
+            return unixTime;
+        }
 };
+

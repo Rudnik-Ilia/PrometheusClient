@@ -8,7 +8,7 @@ template<class T>
 class Counter
 {
     public:
-        Counter(std::vector<std::string> label_values = {}): m_label_values(std::move(label_values)), m_value(std::is_floating_point<T>::value ? 0.0 : 0){}
+        Counter(std::vector<std::string> label_values = {}): m_label_values(std::move(label_values)), m_value(0){}
 
         void Inc(T delta = 1)
         {

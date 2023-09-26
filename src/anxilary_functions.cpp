@@ -2,10 +2,7 @@
 
 #include "../include/anxilary_functions.hpp"
 
-double TimeNow()
-{
-    return std::chrono::duration_cast<std::chrono::duration<double, std::chrono::seconds::period>>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-}
+
 
 std::string DoubleToString(double num)
 {
