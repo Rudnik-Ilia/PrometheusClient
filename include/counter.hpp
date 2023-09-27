@@ -5,7 +5,7 @@
 #include "init.hpp"
 #include "anxilary_functions.hpp"
 
-template<class T>
+template<class T = int64_t>
 class Counter
 {
     public:
