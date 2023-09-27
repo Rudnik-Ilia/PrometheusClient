@@ -19,16 +19,24 @@ class Metric
         {}
 
         template <typename... Args>
-        std::shared_ptr<T> Build(Args ...args)
+        std::unique_ptr<T> Build(Args&& ...args)
         {
-            m_metric = std::make_shared<T>(std::move(args)...);
-            return m_metric;
+            // m_metric = std::make_unique<T>(std::move(args)...);
+            // return m_metric;
+            return std::make_unique<T>(std::move(args)...);
+        }
+
+        template <typename U, typename... Args>
+        static std::unique_ptr<Metric<U>> create(Args ...args) 
+        {
+            return std::make_unique<Metric<U>>(std::forward(args...));
         }
 
     private:
         std::string m_name;
         std::string m_help;
         std::vector<std::string> m_label_names;
-        std::shared_ptr<T> m_metric;
+
+        // std::unique_ptr<T> m_metric;
 };
 
