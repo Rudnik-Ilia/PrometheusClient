@@ -4,7 +4,7 @@
 #include "../include/anxilary_functions.hpp"
 #include "../include/gauge.hpp"
 
-typedef std::chrono::hours HOURS;
+typedef std::chrono::hours HOUR;
 typedef std::chrono::minutes MINUTE;
 typedef std::chrono::seconds SECOND;
 typedef std::chrono::milliseconds MILLISEC;
@@ -15,7 +15,7 @@ template<class T, class Measure = SECOND>
 class Gauge
 {
     public:
-        Gauge(std::vector<std::string> labels_values = {}): m_label_values(std::move(labels_values)), m_value(0){}
+        Gauge(std::vector<std::string> labels_values = {}): m_label_values(std::move(labels_values)){}
         
         class Timer
         {
@@ -74,7 +74,7 @@ class Gauge
 
     private:  
         std::vector<std::string> m_label_values;
-        std::atomic<T> m_value; 
+        std::atomic<T> m_value{}; 
 
         static T TimeNow()
         {

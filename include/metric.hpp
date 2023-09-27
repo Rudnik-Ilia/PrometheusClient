@@ -6,7 +6,7 @@ template<class T>
 class Metric
 {
     public:
-        Metric(/* args */)
+        Metric()
         {
 
         }

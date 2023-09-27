@@ -10,28 +10,39 @@
 using vectorStr = std::vector<std::string>;
 auto g1 = std::make_shared<Gauge<double>>(vectorStr{"get", "post"});
 
-
+void Now()
+{
+    const auto time = std::time(nullptr);
+    LOG(static_cast<double>(time));
+    LOG(static_cast<int64_t>(time));
+}
 
 int main()
 {
-    auto g_dur = std::make_shared<Gauge<int64_t, MILLISEC>>(vectorStr{"get_duration"});
+    auto g_dur = std::make_shared<Gauge<int64_t, NANOSEC>>(vectorStr{});
     LOG(g1->GetValue());
 
     {
         auto t = g_dur->Track();
-        sleep(3);
+        sleep(1);
     }
     LOG(g_dur->GetValue());
     {
         auto t = g_dur->Track();
-        sleep(5);
+        sleep(1);
     }
     LOG(g_dur->GetValue());
 
     g1->Set(3.33);
     g1->Inc(3.33);
     g1->Dec(1.45);
+
+    g1->SetTimeNow();
+    g_dur->SetTimeNow();
+    Now();
+    LOG("------------------------------------------------------");
     LOG(g1->GetValue());
+    LOG(g_dur->GetValue());
 
 
 

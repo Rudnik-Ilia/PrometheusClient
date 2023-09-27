@@ -16,7 +16,7 @@ template<class T = double>
 class Histogram
 {
     public:
-        Histogram(std::vector<T> bounds, std::vector<std::string> label_values = {}): m_label_values(std::move(label_values)), m_gauge_summ()
+        Histogram(std::vector<std::string> label_values = {}, std::vector<T> bounds = {}): m_label_values(std::move(label_values)), m_gauge_summ()
         {
             for(size_t i = 0; i < bounds.size(); ++i)
             {
@@ -25,19 +25,28 @@ class Histogram
             m_bound_counter.emplace(std::make_pair(std::numeric_limits<T>::infinity(), std::vector<std::string>{}));
         }
 
-        void Default()
-        {
-
-        }
-
         void Linear(T start, T step, uint64_t count)
-        {
-
+        {            
+            T value_to_insert = start;
+            m_bound_counter.emplace(std::make_pair(value_to_insert, std::vector<std::string>{}));
+            
+            for(size_t i = 0; i < count - 1; ++i)
+            {
+                value_to_insert += step;
+                m_bound_counter.emplace(std::make_pair(value_to_insert, std::vector<std::string>{}));
+            }
         }
 
         void Exponential(T start, T factor, uint64_t count)
         {
+            T value_to_insert = start;
+            m_bound_counter.emplace(std::make_pair(value_to_insert, std::vector<std::string>{}));
 
+            for(size_t i = 0; i < count - 1; ++i)
+            {
+                value_to_insert *= factor;
+                m_bound_counter.emplace(std::make_pair(value_to_insert, std::vector<std::string>{}));
+            }
         }
 
         void Observe(T value)
@@ -54,24 +63,25 @@ class Histogram
             m_gauge_summ.Inc(value);
         }
 
+        void Reset()
+        {
+            for(auto& iter : m_bound_counter)
+            {
+                iter.second.Reset();
+            }
+        }
+        
+        // FOR TESTING
         void Show()
         {
             for(auto &iter : m_bound_counter)
             {
+                // LOG("bucket: ");
+                // LOG(iter.first);
                 LOG(iter.second.GetValue());
             }
             LOG(m_gauge_summ.GetValue());
         }
-
-        // double _summ()
-        // {
-
-        // }
-
-        // double _count()
-        // {
-
-        // }
 
     private:
         std::vector<std::string> m_label_values;

@@ -58,7 +58,10 @@ int main()
 
     LOG(c2->GetValue());
     c2->Inc(3.33);
+    c1->Inc(3.33);
     LOG(c2->GetValue());
+    LOG(c1->GetValue());
+    c1->Reset();
 
     
     return 0;
