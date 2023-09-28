@@ -16,12 +16,24 @@ using Buckets = std::vector<T>;
 int main()
 {
     auto c1 = prometheus<int64_t>::MakeCoumter("name", "help_counter");
+
+    auto base = prometheus<int64_t>::Base("name", "help_counter");
+
+    auto b1 = base.Build(vectorStr{"ssss"});
+    auto b2 = base.Build(vectorStr{"aaaa"});
+    b1->Inc();
+    b2->Inc();
+
+    base.Show();
+
+
     c1->Inc();
     c1->Inc();
     c1->Inc();
     LOG(c1->GetValue());
 
     auto c2 = prometheus<double>::MakeCoumter("name", "help_counter", {"method"}, {"get"});
+    auto c3 = prometheus<double>::MakeCoumter("name", "help_counter", {"method"}, {"post"});
     c2->Inc();
     c2->Inc(2.2);
     c2->Inc(0.3);

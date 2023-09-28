@@ -6,10 +6,12 @@
 #include "anxilary_functions.hpp"
 
 template<class T = int64_t>
-class Counter
+class Counter: public NonCopy
 {
     public:
+
         Counter(std::vector<std::string> label_values = {}): m_label_values(std::move(label_values)){}
+        
 
         void Inc(T delta = 1)
         {
@@ -38,7 +40,7 @@ class Counter
             }
         }
 
-        std::vector<std::string> Getlabels() 
+        std::vector<std::string> GetLabels() 
         {
             return m_label_values;
         }

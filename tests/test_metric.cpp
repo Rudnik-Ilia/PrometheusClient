@@ -15,6 +15,8 @@ using Buckets = std::vector<T>;
 int main()
 {
     auto c1 = Metric<Counter<int64_t>>("counter", "help",{"method"}).Build(vectorStr{"get"});
+    auto c2 = Metric<Counter<int64_t>>("counter", "help",{"method"}).Build(vectorStr{"post"});
+    
     c1->Inc();
     c1->Inc();
     c1->Inc();
