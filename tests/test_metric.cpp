@@ -22,14 +22,14 @@ int main()
     c1->Inc();
     LOG(c1->GetValue());
 
-    auto g1 = Metric<Gauge<int64_t, NANOSEC>>("gauge", "help_gauge", {"CPU"}).Build(vectorStr{"idle"});
+    auto g1 = Metric<Gauge<int64_t>>("gauge", "help_gauge", {"CPU"}).Build(vectorStr{"idle"});
     g1->Inc(3);
     g1->Dec(1);
     g1->Inc(10);
     LOG(g1->GetValue());
 
     {
-        auto tmp = g1->Track();
+        auto tmp = g1->Track<SECOND>();
         usleep(3456567);
     }
 

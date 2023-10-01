@@ -20,7 +20,7 @@ class Metric
         template <typename... Args>
         std::shared_ptr<T> Build(Args&& ...args)
         {
-            auto metric = std::make_shared<T>(std::move(args)...);
+            auto metric = std::make_shared<T>(std::move(std::vector{args})...);
             m_storage.push_back(metric);
             return metric;
         }
@@ -34,7 +34,6 @@ class Metric
         }
 
     private:
-    
         std::string m_name;
         std::string m_help;
         std::vector<std::string> m_label_names;

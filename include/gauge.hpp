@@ -11,29 +11,31 @@ typedef std::chrono::milliseconds MILLISEC;
 typedef std::chrono::microseconds  MICROSEC;
 typedef std::chrono::nanoseconds NANOSEC;
 
-template<class T, class Measure = SECOND>
+template<class T>
 class Gauge
 {
     public:
         Gauge(std::vector<std::string> labels_values = {}): m_label_values(std::move(labels_values)){}
-        
+
+        template <class Measure = SECOND>
         class Timer
         {
             public:
-                Timer(Gauge<T, Measure>& gauge): m_gauge(gauge), m_start(TimeNow()){}
+                Timer(Gauge<T>& gauge): m_gauge(gauge), m_start(TimeNow()){}
                 ~Timer()
                 {
-                    m_gauge.Set(TimeNow() - m_start);
+                    m_gauge.Set(TimeNow<Measure>() - m_start);
                 }
 
             private:
-                Gauge<T, Measure>& m_gauge;
+                Gauge<T>& m_gauge;
                 T m_start;
         };
 
-        Timer Track()
+        template <class Measure = SECOND>
+        Timer<Measure> Track()
         {
-            return Timer(*this);
+            return Timer<Measure>(*this);
         }
 
         void Inc(T delta = 1.0)
@@ -76,6 +78,7 @@ class Gauge
         std::vector<std::string> m_label_values;
         std::atomic<T> m_value{}; 
 
+        template <class Measure = SECOND>
         static T TimeNow()
         {
             auto currentTime = std::chrono::high_resolution_clock::now();

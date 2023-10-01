@@ -19,16 +19,16 @@ void Now()
 
 int main()
 {
-    auto g_dur = std::make_shared<Gauge<int64_t, NANOSEC>>(vectorStr{});
+    auto g_dur = std::make_shared<Gauge<int64_t>>(vectorStr{});
     LOG(g1->GetValue());
 
     {
-        auto t = g_dur->Track();
+        auto t = g_dur->Track<NANOSEC>();
         sleep(1);
     }
     LOG(g_dur->GetValue());
     {
-        auto t = g_dur->Track();
+        auto t = g_dur->Track<NANOSEC>();
         sleep(1);
     }
     LOG(g_dur->GetValue());

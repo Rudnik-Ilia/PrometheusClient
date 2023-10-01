@@ -9,10 +9,8 @@ template<class T = int64_t>
 class Counter: public NonCopy
 {
     public:
-
         Counter(std::vector<std::string> label_values = {}): m_label_values(std::move(label_values)){}
         
-
         void Inc(T delta = 1)
         {
             T current = 0;
@@ -30,11 +28,11 @@ class Counter: public NonCopy
 
         void Reset()
         {
-            if(std::is_same<T, double>::value)
+            if constexpr (std::is_same_v<T, double>)
             {
                 m_value.store(0.0, std::memory_order_release);
             } 
-            else if(std::is_same<T, int64_t>::value) 
+            else if constexpr (std::is_same_v<T, int64_t>) 
             {
                 m_value.store(0, std::memory_order_release);
             }
