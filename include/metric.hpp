@@ -9,13 +9,31 @@ template<class T>
 class Metric
 {
     public:
+    Metric(){}
         Metric(std::string&& name, std::string&& help, std::vector<std::string>&& label_names = {}): 
         m_name(std::move(name)), 
         m_help(std::move(help)), 
-        m_label_names(std::move(label_names))
-        {}
+        m_label_names(std::move(label_names)){}
 
         ~Metric(){}
+
+        Metric<T>& Name(std::string&& name)
+        {
+            m_name = (std::move(name));
+            return *this;
+        }
+
+        Metric<T>& Help(std::string&& help)
+        {
+            m_help = (std::move(help));
+            return *this;
+        }
+
+        Metric<T>& Labels(std::vector<std::string>&& label_names)
+        {
+            m_label_names = (std::move(label_names));
+            return *this;
+        }
 
         template <typename... Args>
         std::shared_ptr<T> Build(Args&& ...args)
@@ -23,6 +41,19 @@ class Metric
             auto metric = std::make_shared<T>(std::move(std::vector{args})...);
             m_storage.push_back(metric);
             return metric;
+        }
+
+        template <typename... Args>
+        std::shared_ptr<T> AddValues(Args&& ...args)
+        {
+            auto metric = std::make_shared<T>(std::move(std::vector{args})...);
+            m_storage.push_back(metric);
+            return metric;
+        }
+
+        std::vector<std::string> GetLabels()
+        {
+            return m_label_names;
         }
 
         void Show()
@@ -37,6 +68,7 @@ class Metric
         std::string m_name;
         std::string m_help;
         std::vector<std::string> m_label_names;
+
         std::vector<std::shared_ptr<T>> m_storage;
 };
 

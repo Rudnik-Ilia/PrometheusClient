@@ -6,21 +6,39 @@
 #include "gauge.hpp"
 #include "histogram.hpp"
 
-template <template <typename> class Type, class T = int64_t, class U = NANOSEC>
+template <template <typename> class Type, class T = int64_t>
 class prometheus
 {
     public:
 
+        static std::shared_ptr<Metric<Type<T>>> Base(std::string name, std::string help, std::vector<std::string> label_names = {})
+        {
+            auto smart_ptr = std::make_shared<Metric<Type<T>>>(std::move(name), std::move(help) , std::move(label_names));
+            m_all_metrics.push_back(smart_ptr);
+            return smart_ptr;
+        }
+
+        static std::shared_ptr<Metric<Type<T>>> Base()
+        {
+            auto smart_ptr = std::make_shared<Metric<Type<T>>>();
+            m_all_metrics.push_back(smart_ptr);
+            return smart_ptr;
+        }
+
         static std::shared_ptr<Type<T>> Make(std::string name, std::string help, std::vector<std::string> label_names = {}, std::vector<std::string> label_values = {})
         {
-            auto smart_ptr = Metric<Type<T>>(std::move(name), std::move(help) , std::move(label_names)).Build(std::move(label_values));
+            auto smart_ptr = Metric<Type<T>>(std::move(name), std::move(help), std::move(label_names)).Build(std::move(label_values));
             return smart_ptr;
         }
 
 
     private:
-        // static std::vector<Metric<T>*> m_all_metrics;
+        static std::vector<std::shared_ptr<Metric<Type<T>>>> m_all_metrics;
 };
+
+template <template <typename> class Type, class T>
+std::vector<std::shared_ptr<Metric<Type<T>>>> prometheus<Type,T>::m_all_metrics{};
+
 
         // static std::shared_ptr<Counter<T>> MakeCoumter(std::string name, std::string help, std::vector<std::string> label_names = {}, std::vector<std::string> label_values = {})
         // {
