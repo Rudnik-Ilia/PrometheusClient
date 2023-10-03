@@ -27,8 +27,18 @@ class prometheus
 
         static std::shared_ptr<Type<T>> Make(std::string name, std::string help, std::vector<std::string> label_names = {}, std::vector<std::string> label_values = {})
         {
-            auto smart_ptr = Metric<Type<T>>(std::move(name), std::move(help), std::move(label_names)).Build(std::move(label_values));
-            return smart_ptr;
+            auto metric_wrapper = std::make_shared<Metric<Type<T>>>(std::move(name), std::move(help) , std::move(label_names));
+            m_all_metrics.push_back(metric_wrapper);
+            auto metris_entity = metric_wrapper->Build(std::move(label_values));
+            return metris_entity;
+        }
+
+        static void Storage()
+        {
+            for(auto& iter : m_all_metrics)
+            {
+                iter->Show();
+            }
         }
 
 

@@ -9,7 +9,7 @@ template<class T>
 class Metric
 {
     public:
-    Metric(){}
+        Metric(){}
         Metric(std::string&& name, std::string&& help, std::vector<std::string>&& label_names = {}): 
         m_name(std::move(name)), 
         m_help(std::move(help)), 
