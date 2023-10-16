@@ -30,11 +30,8 @@ void WorkTread_1()
     }
 }
 
-
-
 int main()
 {
-
     Counter<double> c3;
 
 

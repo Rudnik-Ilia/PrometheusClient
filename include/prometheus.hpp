@@ -6,20 +6,48 @@
 #include "gauge.hpp"
 #include "histogram.hpp"
 
+class Storage
+{
+    public:
+        static Storage& CreateStorage()
+        {
+            static Storage storage;
+            return storage;
+        }
+
+        template <template <typename> class MetricType, class T = int64_t>
+        void AddToStorage(std::shared_ptr<MetricType<T>>& metrica)
+        {
+          
+        }
+
+    private:
+        Storage() = default;
+
+        template <template <typename> class MetricType, class T = int64_t>
+        static std::vector<std::shared_ptr<MetricType<T>>> m_all_metrics;
+};
+
+template <template <typename> class MetricType, class T>
+std::vector<std::shared_ptr<MetricType<T>>> Storage::m_all_metrics{};
+
+// ***************************************************************************************************************
+
 template <template <typename> class Type, class T = int64_t>
 class prometheus
 {
     public:
-        static std::shared_ptr<Metric<Type<T>>> Base(std::string name, std::string help, std::vector<std::string> label_names = {})
-        {
-            auto smart_ptr = std::make_shared<Metric<Type<T>>>(std::move(name), std::move(help) , std::move(label_names));
-            m_all_metrics.push_back(smart_ptr);
-            return smart_ptr;
-        }
 
         static std::shared_ptr<Metric<Type<T>>> Base()
         {
             auto smart_ptr = std::make_shared<Metric<Type<T>>>();
+            m_all_metrics.push_back(smart_ptr);
+            return smart_ptr;
+        }
+
+        static std::shared_ptr<Metric<Type<T>>> Base(std::string name, std::string help, std::vector<std::string> label_names = {})
+        {
+            auto smart_ptr = std::make_shared<Metric<Type<T>>>(std::move(name), std::move(help) , std::move(label_names));
             m_all_metrics.push_back(smart_ptr);
             return smart_ptr;
         }
@@ -32,6 +60,11 @@ class prometheus
             return metris_entity;
         }
 
+        static void Register(Storage& storage)
+        {
+            storage
+        }
+
         static void Storage()
         {
             for(auto& iter : m_all_metrics)
@@ -41,6 +74,7 @@ class prometheus
         }
 
     private:
+        Storage m_storage;
         static std::vector<std::shared_ptr<Metric<Type<T>>>> m_all_metrics;
 };
 

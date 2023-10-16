@@ -9,7 +9,7 @@ template<class T = int64_t>
 class Counter: public NonCopy
 {
     public:
-        Counter(std::vector<std::string> label_values = {}): m_label_values(std::move(label_values)){}
+        explicit Counter(std::vector<std::string> label_values = {}): m_label_values(std::move(label_values)){}
         
         void Inc(T delta = 1)
         {

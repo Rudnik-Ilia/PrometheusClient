@@ -15,7 +15,6 @@ using Buckets = std::vector<T>;
 
 int main()
 {
-
     auto M1 = Metric<Counter<int64_t>>("name_count", "help", {"method"});
     auto M2 = Metric<Counter<int64_t>>("name_count_2", "help_2", {"method_2", "some"});
     auto c1 = M1.Build(vectorStr{"get"});

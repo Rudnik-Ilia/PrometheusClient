@@ -1,15 +1,18 @@
-#pragma 
+#pragma once
 
 #include <memory>
 
 #include "init.hpp"
 #include "counter.hpp"
+#include "holder.hpp"
 
 template<class T>
 class Metric
 {
     public:
+
         explicit Metric(){}
+
         Metric(std::string&& name, std::string&& help, std::vector<std::string>&& label_names = {}): 
         m_name(std::move(name)), 
         m_help(std::move(help)), 
@@ -35,6 +38,11 @@ class Metric
             return *this;
         }
 
+        void Register(Holder& holder)
+        {
+            
+        }
+
         template <typename... Args>
         std::shared_ptr<T> Build(Args&& ...args)
         {
@@ -51,11 +59,11 @@ class Metric
             return metric;
         }
 
+// TESTING STAFF 
         std::vector<std::string> GetLabels()
         {
             return m_label_names;
         }
-
         void Show()
         {
             for(auto& iter : m_storage)
@@ -64,7 +72,6 @@ class Metric
             }
         }
     private:
-
         std::string m_name;
         std::string m_help;
         std::vector<std::string> m_label_names;
