@@ -10,7 +10,6 @@ template <template <typename> class Type, class T = int64_t>
 class prometheus
 {
     public:
-
         static std::shared_ptr<Metric<Type<T>>> Base(std::string name, std::string help, std::vector<std::string> label_names = {})
         {
             auto smart_ptr = std::make_shared<Metric<Type<T>>>(std::move(name), std::move(help) , std::move(label_names));
@@ -40,7 +39,6 @@ class prometheus
                 iter->Show();
             }
         }
-
 
     private:
         static std::vector<std::shared_ptr<Metric<Type<T>>>> m_all_metrics;

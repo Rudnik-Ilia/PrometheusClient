@@ -3,7 +3,6 @@
 #include "../include/anxilary_functions.hpp"
 
 
-
 std::string DoubleToString(double num)
 {
     return std::to_string(num);
