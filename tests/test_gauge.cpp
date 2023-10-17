@@ -23,12 +23,12 @@ int main()
     LOG(g1->GetValue());
 
     {
-        auto t = g_dur->Track<NANOSEC>();
+        auto t = g_dur->Track<SECOND>();
         sleep(1);
     }
     LOG(g_dur->GetValue());
     {
-        auto t = g_dur->Track<NANOSEC>();
+        auto t = g_dur->Track<MILLISEC>();
         sleep(1);
     }
     LOG(g_dur->GetValue());
@@ -43,6 +43,8 @@ int main()
     LOG("------------------------------------------------------");
     LOG(g1->GetValue());
     LOG(g_dur->GetValue());
+    LOG(g1->GetLabels()[0]);
+    LOG(g1->GetLabels()[1]);
 
 
 

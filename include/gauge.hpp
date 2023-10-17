@@ -3,6 +3,7 @@
 #include "init.hpp"
 #include "../include/anxilary_functions.hpp"
 #include "../include/gauge.hpp"
+#include "IBaseMetric.hpp"
 
 typedef std::chrono::hours HOUR;
 typedef std::chrono::minutes MINUTE;
@@ -12,10 +13,10 @@ typedef std::chrono::microseconds  MICROSEC;
 typedef std::chrono::nanoseconds NANOSEC;
 
 template<class T>
-class Gauge
+class Gauge: public IBaseMetric
 {
     public:
-        Gauge(std::vector<std::string> labels_values = {}): m_label_values(std::move(labels_values)){}
+        Gauge(std::vector<std::string>&& labels_values = {}): IBaseMetric(std::move(labels_values)){}
 
         template <class Measure = SECOND>
         class Timer
@@ -69,13 +70,7 @@ class Gauge
             return m_value.load(std::memory_order_release);
         }
 
-        std::vector<std::string> GetLabels()
-        {
-            return m_label_values;
-        }
-
     private:  
-        std::vector<std::string> m_label_values;
         std::atomic<T> m_value{}; 
 
         template <class Measure = SECOND>
