@@ -31,6 +31,7 @@ int main()
     h1->Show();
     h1->Reset();
     h1->Show();
+    LOG(h1->GetLabels()[0]);
 
     return 0;
 }

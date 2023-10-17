@@ -10,7 +10,6 @@ template<class T>
 class Metric
 {
     public:
-
         explicit Metric(){}
 
         Metric(std::string&& name, std::string&& help, std::vector<std::string>&& label_names = {}): 

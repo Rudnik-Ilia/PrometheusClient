@@ -8,7 +8,7 @@ class IBaseMetric
         explicit IBaseMetric(std::vector<std::string>&& labels_values = {}): m_label_values(std::move(labels_values)){}
         virtual ~IBaseMetric(){};
 
-        virtual std::vector<std::string> GetLabels()
+        std::vector<std::string> GetLabels()
         {
             return m_label_values;
         } 

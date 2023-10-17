@@ -13,10 +13,10 @@ template <class T>
 using BucketsLimit = std::vector<T>;
 
 template<class T = double>
-class Histogram
+class Histogram : public IBaseMetric
 {
     public:
-        Histogram(std::vector<std::string> label_values = {}, std::vector<T> bounds = {}): m_label_values(std::move(label_values)), m_gauge_summ()
+        Histogram(std::vector<std::string>&& label_values = {}, std::vector<T> bounds = {}): IBaseMetric(std::move(label_values)), m_gauge_summ()
         {
             for(size_t i = 0; i < bounds.size(); ++i)
             {
@@ -84,7 +84,6 @@ class Histogram
         }
 
     private:
-        std::vector<std::string> m_label_values;
         Gauge<T> m_gauge_summ;
         std::map<T, Counter<T>> m_bound_counter{};
 };
