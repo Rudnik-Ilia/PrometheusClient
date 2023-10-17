@@ -16,7 +16,7 @@ template<class T = double>
 class Histogram : public IBaseMetric
 {
     public:
-        Histogram(std::vector<std::string>&& label_values = {}, std::vector<T> bounds = {}): IBaseMetric(std::move(label_values)), m_gauge_summ()
+        explicit Histogram(std::vector<std::string>&& label_values = {}, std::vector<T> bounds = {}): IBaseMetric(std::move(label_values)), m_gauge_summ()
         {
             for(size_t i = 0; i < bounds.size(); ++i)
             {

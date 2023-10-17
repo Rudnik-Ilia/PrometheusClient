@@ -41,10 +41,10 @@ int main()
         LOG(iter->GetLabels()[0]);
     }
 
+    LOG((c4->GetType() == MetricType::COUNTER));
+    LOG((g2->GetType() == MetricType::GAUGE));
 
-
-
-
+    // std::cout << (c4->GetType()) << std::endl;
 
     return 0;
 }

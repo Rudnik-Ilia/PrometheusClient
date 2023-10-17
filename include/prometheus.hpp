@@ -37,7 +37,6 @@ template <template <typename> class Type, class T = int64_t>
 class prometheus
 {
     public:
-
         static std::shared_ptr<Metric<Type<T>>> Base()
         {
             auto smart_ptr = std::make_shared<Metric<Type<T>>>();
@@ -64,7 +63,8 @@ class prometheus
         {
             
         }
-
+        
+// FOR TESTING*****************
         static void Storage()
         {
             for(auto& iter : m_all_metrics)
@@ -74,7 +74,6 @@ class prometheus
         }
 
     private:
-        // Storage m_storage;
         static std::vector<std::shared_ptr<Metric<Type<T>>>> m_all_metrics;
 };
 

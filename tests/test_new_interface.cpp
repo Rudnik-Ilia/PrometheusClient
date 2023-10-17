@@ -16,10 +16,7 @@ std::vector<Metric<T>> vec{};
 
 int main()
 {
-
     auto metr = prometheus<Counter, int64_t>::Base();
-
-  
 
     auto metr2 = prometheus<Gauge, int64_t>::Base();
 

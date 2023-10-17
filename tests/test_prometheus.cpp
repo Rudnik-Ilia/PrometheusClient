@@ -4,9 +4,6 @@
 #include <unistd.h>
 
 #include "../include/init.hpp"
-// #include "../include/metric.hpp"
-// #include "../include/gauge.hpp"
-// #include "../include/histogram.hpp"
 #include "../include/prometheus.hpp"
 
 using vectorStr = std::vector<std::string>;

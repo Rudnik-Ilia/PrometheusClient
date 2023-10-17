@@ -5,8 +5,8 @@
 class IMetric
 {
     public:
-    IMetric(){}
-    virtual ~IMetric(){};
+    IMetric() = default;
+    virtual ~IMetric() = default;
 
-    virtual std::vector<std::string> GetLabels() = 0;
+    virtual std::vector<std::string> GetLabels() const = 0;
 };

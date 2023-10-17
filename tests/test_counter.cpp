@@ -33,8 +33,7 @@ void WorkTread_1()
 int main()
 {
     Counter<double> c3;
-
-
+    
     LOG(c1->GetValue());
     // LOG(COUNTER);
 
