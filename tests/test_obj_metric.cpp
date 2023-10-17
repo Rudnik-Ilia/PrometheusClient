@@ -20,7 +20,6 @@ int main()
     auto c1 = M1.Build(vectorStr{"get"});
     auto c2 = M1.Build(vectorStr{"post"});
 
-    M2.Build(vectorStr{"second"}).get()->Inc();
 
     c1->Inc();
     c1->Inc();

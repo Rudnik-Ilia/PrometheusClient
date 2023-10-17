@@ -16,13 +16,22 @@ using Buckets = std::vector<T>;
 
 int main()
 {
-    // auto& holder = Holder::CreateHolder();
 
 
-    // auto group = Metric<Counter<double>>("my counter", "some help");
+    auto c2 = prometheus<Counter, double>::Make("name", "help_counter", {"method"}, {"get"});
+    auto c3 = prometheus<Counter, int64_t>::Make("name", "help_counter", {"method"}, {"post"});
+    auto c4 = prometheus<Counter, int64_t>::Base();
+    auto g2 = prometheus<Gauge, int64_t>::Base();
 
-    // Holder::Register(group);
 
+    auto g1 = prometheus<Gauge, double>::Make("name_gauge", "help_gauge", {"CPU"}, {"idle"});
+
+    LOG(typeid(c2).name());
+    LOG(typeid(c3).name());
+    LOG(typeid(g1).name());
+
+    LOG(typeid(g2).name());
+    LOG(typeid(c4).name());
 
 
 
