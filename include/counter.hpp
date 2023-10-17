@@ -4,12 +4,13 @@
 
 #include "init.hpp"
 #include "anxilary_functions.hpp"
+#include "IBaseMetric.hpp"
 
 template<class T = int64_t>
-class Counter: public NonCopy
+class Counter: public IBaseMetric
 {
     public:
-        explicit Counter(std::vector<std::string> label_values = {}): m_label_values(std::move(label_values)){}
+        explicit Counter(std::vector<std::string>&& label_values = {}): IBaseMetric(std::move(label_values)) {}
         
         void Inc(T delta = 1)
         {
@@ -38,12 +39,6 @@ class Counter: public NonCopy
             }
         }
 
-        std::vector<std::string> GetLabels() 
-        {
-            return m_label_values;
-        }
-
     private:
-        std::vector<std::string> m_label_values{};
         std::atomic<T> m_value{};
 };

@@ -9,8 +9,8 @@ using vectorStr = std::vector<std::string>;
 std::mutex counterMutex{};
 
 int64_t COUNTER = 0;
-auto c1 = std::make_shared<Counter<int64_t>>();
-auto c2 = std::make_shared<Counter<double>>();
+auto c1 = std::make_shared<Counter<int64_t>>(vectorStr{"GET"});
+auto c2 = std::make_shared<Counter<double>>(vectorStr{"POST"});
 
 
 void WorkTread(std::shared_ptr<Counter<int64_t>>& c1)
@@ -59,6 +59,9 @@ int main()
     LOG(c2->GetValue());
     LOG(c1->GetValue());
     c1->Reset();
+
+    LOG(c1->GetLabels()[0]);
+    LOG(c2->GetLabels()[0]);
 
     
     return 0;

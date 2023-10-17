@@ -16,8 +16,6 @@ using Buckets = std::vector<T>;
 
 int main()
 {
-
-
     auto c2 = prometheus<Counter, double>::Make("name", "help_counter", {"method"}, {"get"});
     auto c3 = prometheus<Counter, int64_t>::Make("name", "help_counter", {"method"}, {"post"});
     auto c4 = prometheus<Counter, int64_t>::Base();

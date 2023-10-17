@@ -62,7 +62,7 @@ class prometheus
 
         static void Register(Storage& storage)
         {
-            storage
+            
         }
 
         static void Storage()
@@ -74,7 +74,7 @@ class prometheus
         }
 
     private:
-        Storage m_storage;
+        // Storage m_storage;
         static std::vector<std::shared_ptr<Metric<Type<T>>>> m_all_metrics;
 };
 
