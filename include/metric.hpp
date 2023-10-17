@@ -5,9 +5,10 @@
 #include "init.hpp"
 #include "counter.hpp"
 #include "holder.hpp"
+#include "IMetric.hpp"
 
 template<class T>
-class Metric
+class Metric : public IMetric
 {
     public:
         explicit Metric(){}
