@@ -11,24 +11,45 @@ template<class T>
 using Buckets = std::vector<T>;
 
 
-template <typename T>
-std::vector<Metric<T>> vec{};
-
 int main()
 {
-    auto metr = prometheus<Counter, int64_t>::Base();
+    std::vector<std::shared_ptr<IMetric>> storage{};
 
-    auto metr2 = prometheus<Gauge, int64_t>::Base();
+    auto Family_1 = prometheus<Counter, int64_t>::Base("count", "help", {"method"});
+    auto Family_2 = prometheus<Gauge, double>::Base("gauge", "help2", {"CPU"});
+    auto Family_Error = prometheus<Counter, int64_t>::Base("mistake count", "all mistake",{"tt"});
 
-    auto c1 = metr->Name("counter").Help("some help").Labels({"method"}).Build(vectorStr{"get"});
-    c1->Inc();
-    LOG(metr->GetLabels()[0]);
-    metr->Show();
+    storage.push_back(Family_1);
+    storage.push_back(Family_2);
+    storage.push_back(Family_Error);
 
-    // auto c1 = prometheus<Counter, double>::Make("name_counter", "help_counter", {"method"}, {"get"});
+    auto error = Family_Error->AddValues({"ANY"});
+    error->Inc(123456);
+
+    auto c_3 = Family_1->AddValues({"post"});
+    auto c_4 = Family_1->AddValues({"get"});
+    auto c_5 = Family_1->AddValues({"patch"});
+
+    c_3->Inc(35);
+    LOG(c_3->GetValue());
+    c_4->Inc(177);
+    LOG(c_4->GetValue());
+    c_5->Inc(4556);
+    LOG(c_5->GetValue());
 
 
+    LOG((Family_1->GetType() == MetricType::COUNTER));
+    LOG((Family_2->GetType() == MetricType::GAUGE));
 
+
+    // Family_1->Show();
+    // Family_2->Show();
+    // Family_Error->Show();
+
+    for(auto& iter : storage)
+    {
+        iter->Show();
+    }
 
     return 0;
 }
