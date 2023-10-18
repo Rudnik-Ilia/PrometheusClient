@@ -5,6 +5,16 @@
 #include <iostream>
 #include <memory>
 
+struct Delete
+{
+    Delete() = delete;
+    Delete(const Delete& other) = delete;
+    Delete& operator=(const Delete& other) = delete;
+    Delete(Delete&& other) = delete;
+    Delete&& operator=(Delete&& other) = delete;
+    ~Delete() = delete;
+};
+
 struct NonCopy
 {
     NonCopy() = default;

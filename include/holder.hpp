@@ -2,29 +2,25 @@
 
 #include "init.hpp"
 #include "metric.hpp"
+#include "IMetric.hpp"
 
 class Holder
 {
     public:
-        static Holder& CreateHolder()
+        Holder() = default;
+        ~Holder() = default;
+
+        void StoreMetric(std::shared_ptr<IMetric> metric)
         {
-            static Holder holder;
-            return holder;
+            m_storage.push_back(metric);
         }
 
-        template <template <typename> class MetricType, class T = int64_t>
-        static void Register(MetricType<T>& metric)
+        size_t GetSize()
         {
-            auto sm_ptr = std::make_unique<MetricType<T>>(metric);
-            m_all_metrics<MetricType<T>>.push_back(sm_ptr);
+            return m_storage.size();
         }
 
     private:
-        Holder() = default;
-
-        template <template <typename> class MetricType, class T = int64_t>
-        static std::vector<std::unique_ptr<MetricType<T>>> m_all_metrics;
+        std::vector<std::shared_ptr<IMetric>> m_storage{};
 };
 
-template <template <typename> class MetricType, class T>
-std::vector<std::unique_ptr<MetricType<T>>> Holder::m_all_metrics{};

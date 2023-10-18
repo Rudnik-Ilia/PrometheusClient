@@ -5,6 +5,8 @@
 #include "metric.hpp"
 #include "gauge.hpp"
 #include "histogram.hpp"
+#include "holder.hpp"
+#include "singleton.hpp"
 
 
 // ***************************************************************************************************************
@@ -16,16 +18,19 @@ class prometheus
         static std::shared_ptr<Metric<Type<T>>> Base(std::string name, std::string help, std::vector<std::string> label_names = {})
         {
             auto smart_ptr = std::make_shared<Metric<Type<T>>>(std::move(name), std::move(help) , std::move(label_names));
+            Singleton<Holder>::GetInstance()->StoreMetric(smart_ptr);
             return smart_ptr;
         }
 
         static std::shared_ptr<Type<T>> Make(std::string name, std::string help, std::vector<std::string> label_names = {}, std::vector<std::string> label_values = {})
         {
             auto metric_wrapper = std::make_shared<Metric<Type<T>>>(std::move(name), std::move(help) , std::move(label_names));
+            Singleton<Holder>::GetInstance()->StoreMetric(metric_wrapper);
             auto metris_entity = metric_wrapper->Build(std::move(label_values));
             return metris_entity;
         }
 };
+
 // OLD Ctor without param
 
         // static std::shared_ptr<Metric<Type<T>>> Base()

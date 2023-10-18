@@ -36,9 +36,6 @@ class Metric : public IMetric
         {
             assert(label_values.size() == m_label_names.size());
 
-            std::cout << "SIZE1: " << label_values.size() << std::endl;      
-            std::cout << "SIZE2: " << m_label_names.size() << std::endl;  
-
             auto metric = std::make_shared<T>(std::move(label_values));
             m_storage.push_back(metric);
             return metric;
