@@ -42,6 +42,7 @@ int main()
     }
 
     LOG((c4->GetType() == MetricType::COUNTER));
+    LOG((c4->GetType() == MetricType::HISTOGRAM));
     LOG((g2->GetType() == MetricType::GAUGE));
 
     // std::cout << (c4->GetType()) << std::endl;

@@ -84,17 +84,17 @@ class Metric : public IMetric
 
         MetricType DefineSelfType()
         {
-            if constexpr (std::is_same_v<T, Counter<int64_t>>)
+            if constexpr (std::is_same_v<T, Counter<int64_t>> || std::is_same_v<T, Counter<double>>)
             {
                 LOG("Counter------");
                 return MetricType::COUNTER;
             }
-            else if(std::is_same_v<T, Gauge<int64_t>>)
+            else if(std::is_same_v<T, Gauge<int64_t>> || std::is_same_v<T, Gauge<double>>)
             {
                 LOG("GAUGE------");
                 return MetricType::GAUGE;
             }
-            else if(std::is_same_v<T, Histogram<T>>)
+            else if(std::is_same_v<T, Histogram<int64_t>> || std::is_same_v<T, Histogram<double>>)
             {
                 LOG("Histo------");
                 return MetricType::HISTOGRAM;
