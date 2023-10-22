@@ -57,10 +57,14 @@ int main()
     c1->Inc(3.33);
     LOG(c2->GetValue());
     LOG(c1->GetValue());
-    c1->Reset();
+    // c1->Reset();
 
     LOG(c1->GetLabels()[0]);
     LOG(c2->GetLabels()[0]);
+
+
+    LOG(c1->GetValueAsString());
+    LOG(c2->GetValueAsString());
 
     
     return 0;

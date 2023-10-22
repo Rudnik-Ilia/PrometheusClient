@@ -10,6 +10,15 @@
 #include "gauge.hpp"
 #include "histogram.hpp"
 
+/**
+ * @brief Group of metrics.
+ *        Accumulate several metric with the same type under the same name and help. 
+ *
+ * @param T specify the desireble type of metric....counter , gauge...etc.
+ * @param name of metric
+ * @param Some info about metric, what for. 
+ * @param Name of labels for metric. for example "method = post"..."method" is a label name. 
+ */
 
 template<class T>
 class Metric : public IMetric
@@ -59,6 +68,9 @@ class Metric : public IMetric
                 case (MetricType::HISTOGRAM):
                     return HISTOGRAM_STR;
 
+                case (MetricType::SUMMARY):
+                    return SUMMARY_STR;
+
                 default:
                     break;
             }
@@ -70,16 +82,34 @@ class Metric : public IMetric
             return m_label_names;
         }
 
+        void Collect() override
+        {
+            std::cout << "SIZE STORAGE: " << m_storage.size() << std::endl;
+            std::cout << "# HELP "<< m_help << std::endl;
+            std::cout << "# TYPE " << m_name << ' ' << GetTypeAsString() << std::endl;
+            Show();
+        }
 
-// TESTING STAFF 
+        /**
+         * @brief Only for tests.
+         *
+         * @param no param
+         * @return void and print inside.
+         */
         void Show() const override
         {
-            std::cout << "# HELP "<< m_help << std::endl;
-            std::cout << "# TYPE " << m_name << std::endl;
-
-            for(auto& iter : m_storage)
+            for(size_t j = 0; j < m_label_names.size(); ++j)
             {
-                std::cout << m_name << " { " << m_label_names[0] << '=' << iter->GetLabels()[0] << " } " << iter->GetValue() << std::endl;
+                std::cout << m_name << " {";  
+
+                for(size_t i = 0; i < m_storage.size(); ++i)
+                {
+                    std::cout << "LOOP: " << i << std::endl;
+                    std::cout << m_label_names[i] << " = " << '"'<< m_storage[j]->GetLabels()[i] << '"' << ",";
+                }
+                std::cout << " }"; 
+                std::cout << m_storage[j]->GetValueAsString();
+                std::cout << '\n';
             }
         }
     private:
@@ -88,20 +118,16 @@ class Metric : public IMetric
         {
             if constexpr (std::is_same_v<T, Counter<int64_t>> || std::is_same_v<T, Counter<double>>)
             {
-                LOG("COUNTER");
                 return MetricType::COUNTER;
             }
             else if(std::is_same_v<T, Gauge<int64_t>> || std::is_same_v<T, Gauge<double>>)
             {
-                LOG("GAUGE");
                 return MetricType::GAUGE;
             }
             else if(std::is_same_v<T, Histogram<int64_t>> || std::is_same_v<T, Histogram<double>>)
             {
-                LOG("HISTOGRAM");
                 return MetricType::HISTOGRAM;
             }
-            LOG("UNTYPED");
             return MetricType::UNTYPED;
         }
 

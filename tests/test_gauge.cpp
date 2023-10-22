@@ -46,6 +46,10 @@ int main()
     LOG(g1->GetLabels()[0]);
     LOG(g1->GetLabels()[1]);
 
+    LOG(g1->GetValueAsString());
+    LOG(g_dur->GetValueAsString());
+
+
 
 
     return 0;

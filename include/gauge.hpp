@@ -16,7 +16,7 @@ template<class T>
 class Gauge: public IBaseMetric
 {
     public:
-        Gauge(std::vector<std::string>&& labels_values = {}): IBaseMetric(std::move(labels_values)){}
+        explicit Gauge(std::vector<std::string>&& labels_values = {}): IBaseMetric(std::move(labels_values)){}
 
         template <class Measure = SECOND>
         class Timer
@@ -68,6 +68,11 @@ class Gauge: public IBaseMetric
         T GetValue()
         {
             return m_value.load(std::memory_order_release);
+        }
+
+        std::string GetValueAsString()
+        {
+            return std::to_string(m_value.load(std::memory_order_acquire));
         }
 
     private:  
