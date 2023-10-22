@@ -4,13 +4,11 @@
 #include "metric.hpp"
 #include "IMetric.hpp"
 
-class Holder
+class Holder: public NonCopy
 {
     public:
-        Holder() = default;
-        ~Holder() = default;
 
-        void StoreMetric(std::shared_ptr<IMetric> metric)
+        void RegistrateMetric(std::shared_ptr<IMetric> metric)
         {
             m_storage.push_back(metric);
         }

@@ -46,15 +46,31 @@ class Metric : public IMetric
             return m_type;
         }
 
-        void Register(Holder& holder)
+        std::string GetTypeAsString() const
         {
-            
+            switch (m_type)
+            {
+                case (MetricType::COUNTER):
+                    return COUNTER_STR;
+
+                case (MetricType::GAUGE):
+                    return GAUGE_STR;
+
+                case (MetricType::HISTOGRAM):
+                    return HISTOGRAM_STR;
+
+                default:
+                    break;
+            }
+            return UNTYPED_STR;
         }
 
         std::vector<std::string> GetLabels() const override
         {
             return m_label_names;
         }
+
+
 // TESTING STAFF 
         void Show() const override
         {

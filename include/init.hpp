@@ -22,9 +22,10 @@ struct NonCopy
     NonCopy(NonCopy&& other) = delete;
     NonCopy& operator=(const NonCopy& other) = delete; 
     NonCopy& operator=(NonCopy&& other) = delete; 
+    ~NonCopy() = default;
 };
 
-enum class MetricType
+enum class MetricType: int8_t
 {
     COUNTER = 0,
     GAUGE,
@@ -32,3 +33,10 @@ enum class MetricType
     SUMMARY,
     UNTYPED
 };
+
+
+const std::string COUNTER_STR = "counter";
+const std::string GAUGE_STR = "gauge";
+const std::string HISTOGRAM_STR = "histogram";
+const std::string SUMMARY_STR = "summary";
+const std::string UNTYPED_STR = "summary";
