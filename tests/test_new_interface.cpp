@@ -46,10 +46,7 @@ int main()
     // Family_2->Show();
     // Family_Error->Show();
 
-    for(auto& iter : storage)
-    {
-        iter->Show();
-    }
+
 
     return 0;
 }

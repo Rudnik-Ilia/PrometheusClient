@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sstream>
+
 #include "init.hpp"
 #include "metric.hpp"
 #include "IMetric.hpp"
@@ -30,7 +32,22 @@ class Holder: public NonCopy
             }
         }
 
+        std::string GetData()
+        {
+            std::string result;
+
+            for(auto& group : m_storage_group)
+            {
+                m_ss << group->Serialize();
+            }
+
+            result = m_ss.str();
+            return result;
+        }
+
     private:
         std::vector<std::shared_ptr<IMetric>> m_storage_group{};
+        std::ostringstream m_ss{};
+
 };
 

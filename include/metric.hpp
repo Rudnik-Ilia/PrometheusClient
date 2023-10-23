@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <cassert>
+#include <sstream>
 
 #include "init.hpp"
 #include "counter.hpp"
@@ -43,7 +44,7 @@ class Metric : public IMetric
 
         std::shared_ptr<T> AddValues(std::vector<std::string>&& label_values)
         {
-            assert(label_values.size() == m_label_names.size());
+            // assert(label_values.size() == m_label_names.size());
 
             auto metric = std::make_shared<T>(std::move(label_values));
             m_storage.push_back(metric);
@@ -84,48 +85,57 @@ class Metric : public IMetric
 
         void Collect() override
         {
-            // std::cout << "# HELP "<< m_help << std::endl;
-            // std::cout << "# TYPE " << m_name << ' ' << GetTypeAsString() << std::endl;
-
             std::cout << Serialize() << std::endl;
-            
         }
 
-        /**
-         * @brief Only for tests.
-         *
-         * @param no param
-         * @return void and print inside.
-         */
         std::string Serialize() const override
         {
+            const size_t label_size_group = m_label_names.size();
+            size_t value_size_metric = 0;
+
             std::string result;
             result.reserve(1024);
 
-            result.append("# HELP");
+            result += HELP;
+            result += m_name;
+            result += SPACE;
+            result += m_help;
+            result += NEWLINE;
+            result += TYPE;
+            result += m_name;
+            result += SPACE;
+            result += GetTypeAsString();
+            result += NEWLINE;
 
             for(auto& metric : m_storage)
             {
-                result.append("{");
-
-                for(size_t i = 0; i < metric->GetLabels().size(); ++i)
+                value_size_metric = metric->GetLabels().size();
+                if(label_size_group != value_size_metric)
                 {
-                    result.append(m_label_names[i]);
-                    result.append(" = ");
-                    result.append(metric->GetLabels()[i]);
-                    if(i < (metric->GetLabels().size() - 1))
+                    continue;
+                }
+
+                result += m_name;
+                result += "{";
+
+                for(size_t i = 0; i < value_size_metric; ++i)
+                {
+                    result += m_label_names[i];
+                    result += "=";
+                    result += AddQuotes(metric->GetLabels()[i]);
+                    if(i < (value_size_metric - 1))
                     {
-                        result.append(", ");
+                        result += COMMA;
                     }
                 }
 
-                result.append("} ");
-                result.append(metric->GetValueAsString());
-                result.append("\n");
+                result += "} ";
+                result += metric->GetValueAsString();
+                result += NEWLINE;
             }
-
             return result;
         }
+
     private:
 
         MetricType DefineSelfType()
@@ -152,6 +162,7 @@ class Metric : public IMetric
 
         MetricType m_type;
 };
+
 
 // OLD Builder method
 

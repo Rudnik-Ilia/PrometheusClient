@@ -42,11 +42,6 @@ class Counter: public IBaseMetric
             return std::to_string(m_value.load(std::memory_order_acquire));
         }
 
-        void Collect()
-        {
-            
-        }
-
         /**
          * @brief Dror a counter to zero.
          *

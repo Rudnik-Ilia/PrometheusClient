@@ -5,6 +5,8 @@
 #include <iostream>
 #include <memory>
 
+#include "anxilary_functions.hpp"
+
 struct Delete
 {
     Delete() = delete;
@@ -44,3 +46,6 @@ const std::string UNTYPED_STR = "summary";
 const std::string HELP = "# HELP ";
 const std::string TYPE = "# TYPE ";
 const std::string NEWLINE = "\n";
+const std::string COMMA = ",";
+const std::string SPACE = " ";
+const std::string _TOTAL = "_total";
