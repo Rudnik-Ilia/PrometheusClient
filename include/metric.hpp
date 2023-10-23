@@ -14,7 +14,7 @@
  * @brief Group of metrics.
  *        Accumulate several metric with the same type under the same name and help. 
  *
- * @param T specify the desireble type of metric....counter , gauge...etc.
+ * @param T specify the desireble type of metric....Counter , Gauge, Histogram, Summary.
  * @param name of metric
  * @param Some info about metric, what for. 
  * @param Name of labels for metric. for example "method = post"..."method" is a label name. 
@@ -84,10 +84,11 @@ class Metric : public IMetric
 
         void Collect() override
         {
-            std::cout << "SIZE STORAGE: " << m_storage.size() << std::endl;
-            std::cout << "# HELP "<< m_help << std::endl;
-            std::cout << "# TYPE " << m_name << ' ' << GetTypeAsString() << std::endl;
-            Show();
+            // std::cout << "# HELP "<< m_help << std::endl;
+            // std::cout << "# TYPE " << m_name << ' ' << GetTypeAsString() << std::endl;
+
+            std::cout << Serialize() << std::endl;
+            
         }
 
         /**
@@ -96,21 +97,34 @@ class Metric : public IMetric
          * @param no param
          * @return void and print inside.
          */
-        void Show() const override
+        std::string Serialize() const override
         {
-            for(size_t j = 0; j < m_label_names.size(); ++j)
-            {
-                std::cout << m_name << " {";  
+            std::string result;
+            result.reserve(1024);
 
-                for(size_t i = 0; i < m_storage.size(); ++i)
+            result.append("# HELP");
+
+            for(auto& metric : m_storage)
+            {
+                result.append("{");
+
+                for(size_t i = 0; i < metric->GetLabels().size(); ++i)
                 {
-                    std::cout << "LOOP: " << i << std::endl;
-                    std::cout << m_label_names[i] << " = " << '"'<< m_storage[j]->GetLabels()[i] << '"' << ",";
+                    result.append(m_label_names[i]);
+                    result.append(" = ");
+                    result.append(metric->GetLabels()[i]);
+                    if(i < (metric->GetLabels().size() - 1))
+                    {
+                        result.append(", ");
+                    }
                 }
-                std::cout << " }"; 
-                std::cout << m_storage[j]->GetValueAsString();
-                std::cout << '\n';
+
+                result.append("} ");
+                result.append(metric->GetValueAsString());
+                result.append("\n");
             }
+
+            return result;
         }
     private:
 
@@ -166,3 +180,18 @@ class Metric : public IMetric
         //     m_storage.push_back(metric);
         //     return metric;
         // }
+
+// *****************************************************
+    // for(size_t j = 0; j < m_label_names.size(); ++j)
+    // {
+    //     std::cout << m_name << " {";  
+
+    //     for(size_t i = 0; i < m_storage.size(); ++i)
+    //     {
+    //         std::cout << "LOOP: " << i << std::endl;
+    //         std::cout << m_label_names[i] << " = " << '"'<< m_storage[j]->GetLabels()[i] << '"' << ",";
+    //     }
+    //     std::cout << " }"; 
+    //     std::cout << m_storage[j]->GetValueAsString();
+    //     std::cout << '\n';
+    // }

@@ -2,21 +2,9 @@
 
 #include "init.hpp"
 
-struct InfoGroup
-{   
-    std::string info_help{};
-    std::string info_name{};
-    std::string info_type{};
-    std::vector<std::string> info_labels{};
-};
 
-struct InfoMetric
-{   
-    std::vector<std::string> info_names{};
-    std::string info_value{};
-};
 
-class IMetric: public InfoGroup
+class IMetric
 {
     public:
         IMetric() = default;
@@ -27,7 +15,7 @@ class IMetric: public InfoGroup
     virtual void Collect() = 0;
 
     // TESTING STAFF 
-    virtual void Show() const = 0;
+    virtual std::string Serialize() const = 0;
 
     private:
 

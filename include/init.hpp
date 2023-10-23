@@ -34,9 +34,13 @@ enum class MetricType: int8_t
     UNTYPED
 };
 
-
 const std::string COUNTER_STR = "counter";
 const std::string GAUGE_STR = "gauge";
 const std::string HISTOGRAM_STR = "histogram";
 const std::string SUMMARY_STR = "summary";
 const std::string UNTYPED_STR = "summary";
+
+
+const std::string HELP = "# HELP ";
+const std::string TYPE = "# TYPE ";
+const std::string NEWLINE = "\n";
