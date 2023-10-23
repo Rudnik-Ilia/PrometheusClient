@@ -44,7 +44,7 @@ class Metric : public IMetric
 
         std::shared_ptr<T> AddValues(std::vector<std::string>&& label_values)
         {
-            // assert(label_values.size() == m_label_names.size());
+            assert(label_values.size() == m_label_names.size());
 
             auto metric = std::make_shared<T>(std::move(label_values));
             m_storage.push_back(metric);
