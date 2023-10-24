@@ -30,7 +30,7 @@ int main()
 
     {
         auto gg = g_1->Track<MICROSEC>();
-        sleep(3);
+        sleep(1);
     }
 
     LOG(holder->GetSize());
@@ -38,13 +38,27 @@ int main()
     LOG(Family_1->GetTypeAsString());
     // LOG(Family_2->GetTypeAsString());
 
-    LOG("****************************************");
 
     // holder->Bridge();
+    LOG("************************************************************************");
+    LOG(holder->GetData());
+
+    g_1->SetTimeNow();
+
+    LOG("************************************************************************");
     LOG(holder->GetData());
 
 
 
+    auto h_1 = prometheus<Histogram, double>::Make("histo_latency", "help_histo", {"request", "CPU"}, {"get", "idle"});
+
+    LOG("************************************************************************");
+    LOG(holder->GetData());
+
+    h_1->LinearBuckets(1.0, 0.3, 3);
+    h_1->Observe(1.1);
+    h_1->Observe(1.2);
+    // h_1->Show();
 
     return 0;
 }

@@ -109,32 +109,75 @@ class Metric : public IMetric
 
             for(auto& metric : m_storage)
             {
-                value_size_metric = metric->GetLabels().size();
-                if(label_size_group != value_size_metric)
+                if((this->m_type == MetricType::COUNTER) || (this->m_type == MetricType::GAUGE))
                 {
-                    continue;
-                }
+                    value_size_metric = metric->GetLabels().size();
 
-                result += m_name;
-                result += "{";
-
-                for(size_t i = 0; i < value_size_metric; ++i)
-                {
-                    result += m_label_names[i];
-                    result += "=";
-                    result += AddQuotes(metric->GetLabels()[i]);
-                    if(i < (value_size_metric - 1))
+                    if(label_size_group != value_size_metric)
                     {
-                        result += COMMA;
+                        continue;
                     }
-                }
 
-                result += "} ";
-                result += metric->GetValueAsString();
-                result += NEWLINE;
+                    result += m_name;
+                    result += "{";
+
+                    for(size_t i = 0; i < value_size_metric; ++i)
+                    {
+                        result += m_label_names[i];
+                        result += "=";
+                        result += AddQuotes(metric->GetLabels()[i]);
+                        if(i < (value_size_metric - 1))
+                        {
+                            result += COMMA;
+                        }
+                    }
+
+                    result += "} ";
+                    result += metric->GetValueAsString();
+                    result += NEWLINE;
+                }
+                else if(this->m_type == MetricType::HISTOGRAM)
+                {
+                    value_size_metric = metric->GetLabels().size();
+
+                    if(label_size_group != value_size_metric)
+                    {
+                        continue;
+                    }
+
+                    for(size_t k = 0; k < 5; ++k)
+                    {
+                        result += m_name;
+                        result += _BUCKET;
+                        result += "{";
+
+                        for(size_t i = 0; i < value_size_metric; ++i)
+                        {
+                            result += m_label_names[i];
+                            result += "=";
+                            result += AddQuotes(metric->GetLabels()[i]);
+
+                            if(i < (value_size_metric - 1))
+                            {
+                                result += COMMA;
+                            }
+                        }
+                        
+                        result += COMMA;
+                        result += LE;
+                        result += AddQuotes("0.8");
+
+                        result += "} ";
+                        result += metric->GetValueAsString();
+                        result += NEWLINE;
+                    }
+                    
+                }
             }
             return result;
         }
+
+
 
     private:
 

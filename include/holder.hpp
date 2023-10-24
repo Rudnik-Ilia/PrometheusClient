@@ -38,16 +38,20 @@ class Holder: public NonCopy
 
             for(auto& group : m_storage_group)
             {
-                m_ss << group->Serialize();
+                m_oss << group->Serialize();
             }
 
-            result = m_ss.str();
+            result = m_oss.str();
+            
+            m_oss.str("");
+            m_oss.clear();
+
             return result;
         }
 
     private:
         std::vector<std::shared_ptr<IMetric>> m_storage_group{};
-        std::ostringstream m_ss{};
+        std::ostringstream m_oss{};
 
 };
 

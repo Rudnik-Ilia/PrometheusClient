@@ -12,7 +12,17 @@ typedef std::chrono::milliseconds MILLISEC;
 typedef std::chrono::microseconds  MICROSEC;
 typedef std::chrono::nanoseconds NANOSEC;
 
-template<class T>
+/**
+ * @brief Class represent a Gauge metric.
+ *
+ * You can increase and decrease the metric, also you can measure a period of time by Track<>,
+ * specify measurment units that written above.
+ *
+ * @param T represent metrcic type value, double or int64 ONLY! default is int64.
+ * @param label_values Value of Labels, for example "method = get", "get" is label value. You may specify or not.
+ *        Amount of label values MUST be the same as label names specifued in Metric.      
+ */
+template<class T = int64_t>
 class Gauge: public IBaseMetric
 {
     public:

@@ -49,3 +49,7 @@ const std::string NEWLINE = "\n";
 const std::string COMMA = ",";
 const std::string SPACE = " ";
 const std::string _TOTAL = "_total";
+const std::string _BUCKET = "_bucket";
+const std::string LE = "le=";
+const std::string _SUM = "_sum";
+const std::string _COUNT = "_count";

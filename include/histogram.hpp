@@ -16,7 +16,6 @@ template<class T = double>
 class Histogram : public IBaseMetric
 {
     public:
-    
         Histogram(std::vector<std::string>&& label_values = {}, std::vector<T> bounds = {}): IBaseMetric(std::move(label_values)), m_gauge_summ()
         {
             for(size_t i = 0; i < bounds.size(); ++i)
@@ -26,7 +25,7 @@ class Histogram : public IBaseMetric
             m_bound_counter.emplace(std::make_pair(std::numeric_limits<T>::infinity(), std::vector<std::string>{}));
         }
 
-        void Linear(T start, T step, uint64_t count)
+        void LinearBuckets(T start, T step, uint64_t count)
         {            
             T value_to_insert = start;
             m_bound_counter.emplace(std::make_pair(value_to_insert, std::vector<std::string>{}));
@@ -38,7 +37,7 @@ class Histogram : public IBaseMetric
             }
         }
 
-        void Exponential(T start, T factor, uint64_t count)
+        void ExponentialBuckets(T start, T factor, uint64_t count)
         {
             T value_to_insert = start;
             m_bound_counter.emplace(std::make_pair(value_to_insert, std::vector<std::string>{}));
@@ -71,16 +70,22 @@ class Histogram : public IBaseMetric
                 iter.second.Reset();
             }
         }
+
+        std::string GetValueAsString()
+        {
+            return "STUB";
+        }
         
         // FOR TESTING
         void Show()
         {
             for(auto &iter : m_bound_counter)
             {
-                // LOG("bucket: ");
-                // LOG(iter.first);
+                LOG("bucket: ");
+                LOG(iter.first);
                 LOG(iter.second.GetValue());
             }
+            LOG("_summ: ");
             LOG(m_gauge_summ.GetValue());
         }
 

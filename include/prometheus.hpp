@@ -17,31 +17,24 @@ class prometheus
     public:
         static std::shared_ptr<Metric<Type<T>>> Base(std::string name, std::string help, std::vector<std::string> label_names = {})
         {
-            auto smart_ptr = std::make_shared<Metric<Type<T>>>(std::move(name), std::move(help) , std::move(label_names));
+            auto group_ptr = std::make_shared<Metric<Type<T>>>(std::move(name), std::move(help) , std::move(label_names));
 
-            Singleton<Holder>::GetInstance()->RegistrateMetric(smart_ptr);
+            Singleton<Holder>::GetInstance()->RegistrateMetric(group_ptr);
             
-            return smart_ptr;
+            return group_ptr;
         }
 
         static std::shared_ptr<Type<T>> Make(std::string name, std::string help, std::vector<std::string> label_names = {}, std::vector<std::string> label_values = {})
         {
-            auto metric_wrapper = std::make_shared<Metric<Type<T>>>(std::move(name), std::move(help) , std::move(label_names));
+            auto group_ptr = std::make_shared<Metric<Type<T>>>(std::move(name), std::move(help) , std::move(label_names));
 
-            Singleton<Holder>::GetInstance()->RegistrateMetric(metric_wrapper);
+            Singleton<Holder>::GetInstance()->RegistrateMetric(group_ptr);
 
-            auto metris_entity = metric_wrapper->Build(std::move(label_values));
-            return metris_entity;
+            auto metric = group_ptr->Build(std::move(label_values));
+            return metric;
         }
 };
 
-// OLD Ctor without param
-
-        // static std::shared_ptr<Metric<Type<T>>> Base()
-        // {
-        //     auto smart_ptr = std::make_shared<Metric<Type<T>>>();
-        //     return smart_ptr;
-        // }
 
 
 // OLD factory methods
