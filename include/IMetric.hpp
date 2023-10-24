@@ -17,6 +17,4 @@ class IMetric
     // TESTING STAFF 
     virtual std::string Serialize() const = 0;
 
-    private:
-
 };

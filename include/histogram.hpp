@@ -23,6 +23,7 @@ class Histogram : public IBaseMetric
                 m_bound_counter.emplace(std::make_pair(bounds[i], std::vector<std::string>{}));
             }
             m_bound_counter.emplace(std::make_pair(std::numeric_limits<T>::infinity(), std::vector<std::string>{}));
+            // m_iterator = m_label_values.begin();
         }
 
         void LinearBuckets(T start, T step, uint64_t count)
@@ -71,9 +72,13 @@ class Histogram : public IBaseMetric
             }
         }
 
-        std::string GetValueAsString()
+        std::pair<std::string, std::string> GetValueAsString()
         {
-            return "STUB";
+            // m_iterator = m_bound_counter.begin();
+
+            // ++m_iterator;
+            // return std::make_pair(std::to_string(m_iterator->first), m_iterator->second.GetValueAsString().first); 
+            return std::make_pair("0.0", "7.9"); 
         }
         
         // FOR TESTING
@@ -92,4 +97,5 @@ class Histogram : public IBaseMetric
     private:
         Gauge<T> m_gauge_summ;
         std::map<T, Counter<T>> m_bound_counter{};
+        // typename std::map<T, Counter<T>>::iterator m_iterator{};
 };

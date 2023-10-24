@@ -133,7 +133,7 @@ class Metric : public IMetric
                     }
 
                     result += "} ";
-                    result += metric->GetValueAsString();
+                    result += metric->GetValueAsString().first;
                     result += NEWLINE;
                 }
                 else if(this->m_type == MetricType::HISTOGRAM)
@@ -165,10 +165,10 @@ class Metric : public IMetric
                         
                         result += COMMA;
                         result += LE;
-                        result += AddQuotes("0.8");
+                        result += AddQuotes(metric->GetValueAsString().first);
 
                         result += "} ";
-                        result += metric->GetValueAsString();
+                        result += metric->GetValueAsString().second;
                         result += NEWLINE;
                     }
                     

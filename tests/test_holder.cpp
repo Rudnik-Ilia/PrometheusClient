@@ -50,15 +50,15 @@ int main()
 
 
 
-    auto h_1 = prometheus<Histogram, double>::Make("histo_latency", "help_histo", {"request", "CPU"}, {"get", "idle"});
+    auto h_1 = prometheus<Histogram, int64_t>::Make("histo_latency", "help_histo", {"request", "CPU"}, {"get", "idle"});
+    h_1->LinearBuckets(1, 2, 5);
+    h_1->Observe(0);
+    // h_1->Observe(1.2);
 
     LOG("************************************************************************");
     LOG(holder->GetData());
 
-    h_1->LinearBuckets(1.0, 0.3, 3);
-    h_1->Observe(1.1);
-    h_1->Observe(1.2);
-    // h_1->Show();
+    h_1->Show();
 
     return 0;
 }

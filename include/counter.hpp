@@ -25,7 +25,7 @@ class Counter: public IBaseMetric
 
         T GetValue() const;
 
-        std::string GetValueAsString() const;
+        std::pair<std::string, std::string> GetValueAsString() const;
 
         /**
          * @brief Dror a counter to zero.
@@ -76,7 +76,8 @@ T Counter<T>::GetValue() const
 }
 
 template<class T>
-std::string Counter<T>::GetValueAsString() const
+std::pair<std::string, std::string> Counter<T>::GetValueAsString() const
 {
-    return std::to_string(m_value.load(std::memory_order_acquire));
+    return std::make_pair(std::to_string(m_value.load(std::memory_order_acquire)), "STUB");
+    
 }

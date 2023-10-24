@@ -52,7 +52,7 @@ class Gauge: public IBaseMetric
 
         T GetValue() const;
 
-        std::string GetValueAsString() const;
+        std::pair<std::string, std::string> GetValueAsString() const;
 
     private:  
         std::atomic<T> m_value{}; 
@@ -106,9 +106,9 @@ T Gauge<T>::GetValue() const
 }
 
 template<typename T>
-std::string Gauge<T>::GetValueAsString() const
+std::pair<std::string, std::string> Gauge<T>::GetValueAsString() const
 {
-    return std::to_string(m_value.load(std::memory_order_acquire));
+    return std::make_pair(std::to_string(m_value.load(std::memory_order_acquire)), "STUB");
 }
 
 template<typename T>
