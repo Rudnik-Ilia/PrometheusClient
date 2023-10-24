@@ -30,6 +30,7 @@ int main()
 
     {
         auto gg = g_1->Track<MICROSEC>();
+        sleep(3);
     }
 
     LOG(holder->GetSize());

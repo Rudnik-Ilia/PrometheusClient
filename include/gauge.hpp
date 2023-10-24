@@ -16,64 +16,33 @@ template<class T>
 class Gauge: public IBaseMetric
 {
     public:
-        explicit Gauge(std::vector<std::string>&& labels_values = {}): IBaseMetric(std::move(labels_values)){}
+        explicit Gauge(std::vector<std::string>&& labels_values = {});
 
         template <class Measure = SECOND>
         class Timer
         {
             public:
-                Timer(Gauge<T>& gauge): m_gauge(gauge), m_start(TimeNow()){}
-                ~Timer()
-                {
-                    m_gauge.Set(TimeNow<Measure>() - m_start);
-                }
-
+                Timer(Gauge<T>& gauge);
+                ~Timer();
             private:
                 Gauge<T>& m_gauge;
                 T m_start;
         };
 
         template <class Measure = SECOND>
-        Timer<Measure> Track()
-        {
-            return Timer<Measure>(*this);
-        }
+        Timer<Measure> Track();
 
-        void Inc(T delta = 1.0)
-        {
-            T current = 0;
-            do
-            {
-                current = m_value.load(std::memory_order_acquire);
-            } 
-            while(!m_value.compare_exchange_weak(current, current + delta));
-            
-        }
+        void Inc(T delta = 1.0);
 
-        void Dec(T delta = 1)
-        {
-            Inc(-delta);
-        }
+        void Dec(T delta = 1);
 
-        void Set(T value)
-        {
-            m_value.store(value, std::memory_order_release);
-        }
+        void Set(T value);
 
-        void SetTimeNow()
-        {
-            Set(TimeNow());
-        }
+        void SetTimeNow();
 
-        T GetValue()
-        {
-            return m_value.load(std::memory_order_release);
-        }
+        T GetValue() const;
 
-        std::string GetValueAsString()
-        {
-            return std::to_string(m_value.load(std::memory_order_acquire));
-        }
+        std::string GetValueAsString() const;
 
     private:  
         std::atomic<T> m_value{}; 
@@ -87,4 +56,66 @@ class Gauge: public IBaseMetric
             return unixTime;
         }
 };
+
+template<typename T>
+Gauge<T>::Gauge(std::vector<std::string>&& labels_values) : IBaseMetric(std::move(labels_values)){}
+
+template<typename T>
+void Gauge<T>::Inc(T delta)
+{
+    T current = 0;
+    do
+    {
+        current = m_value.load(std::memory_order_acquire);
+    } 
+    while(!m_value.compare_exchange_weak(current, current + delta)); 
+}
+
+template<typename T>
+void Gauge<T>::Dec(T delta)
+{
+    Inc(-delta);
+}
+
+template<typename T>
+void Gauge<T>::Set(T value)
+{
+    m_value.store(value, std::memory_order_release);
+}
+
+template<typename T>
+void Gauge<T>::SetTimeNow()
+{
+    Set(TimeNow());
+}
+
+template<typename T>
+T Gauge<T>::GetValue() const
+{
+    return m_value.load(std::memory_order_release);
+}
+
+template<typename T>
+std::string Gauge<T>::GetValueAsString() const
+{
+    return std::to_string(m_value.load(std::memory_order_acquire));
+}
+
+template<typename T>
+template <class Measure>
+Gauge<T>::Timer<Measure> Gauge<T>::Track()
+{
+    return Timer<Measure>(*this);
+}
+
+template<typename T>
+template <class Measure>
+Gauge<T>::Timer<Measure>::Timer(Gauge<T>& gauge): m_gauge(gauge), m_start(TimeNow()){}
+
+template<typename T>
+template <class Measure>
+Gauge<T>::Timer<Measure>::~Timer()
+{
+    m_gauge.Set(TimeNow<Measure>() - m_start);
+}
 
