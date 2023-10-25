@@ -15,7 +15,7 @@ template <template <typename> class Type, class T = int64_t>
 class prometheus
 {
     public:
-        static std::shared_ptr<Metric<Type<T>>> Base(std::string name, std::string help, std::vector<std::string> label_names = {})
+        static std::shared_ptr<Metric<Type<T>>> Group(std::string name, std::string help, std::vector<std::string> label_names = {})
         {
             auto group_ptr = std::make_shared<Metric<Type<T>>>(std::move(name), std::move(help) , std::move(label_names));
 
@@ -24,7 +24,7 @@ class prometheus
             return group_ptr;
         }
 
-        static std::shared_ptr<Type<T>> Make(std::string name, std::string help, std::vector<std::string> label_names = {}, std::vector<std::string> label_values = {})
+        static std::shared_ptr<Type<T>> MakeMetric(std::string name, std::string help, std::vector<std::string> label_names = {}, std::vector<std::string> label_values = {})
         {
             auto group_ptr = std::make_shared<Metric<Type<T>>>(std::move(name), std::move(help) , std::move(label_names));
 

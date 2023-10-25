@@ -53,3 +53,4 @@ const std::string _BUCKET = "_bucket";
 const std::string LE = "le=";
 const std::string _SUM = "_sum";
 const std::string _COUNT = "_count";
+const std::string INF = "+Inf";

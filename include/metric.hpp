@@ -145,7 +145,7 @@ class Metric : public IMetric
                         continue;
                     }
 
-                    for(size_t k = 0; k < 5; ++k)
+                    for(size_t k = 0; k < 4; ++k)
                     {
                         result += m_name;
                         result += _BUCKET;
@@ -176,8 +176,6 @@ class Metric : public IMetric
             }
             return result;
         }
-
-
 
     private:
 

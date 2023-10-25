@@ -15,7 +15,8 @@ int main()
     // h1->Exponential(1.0, 3.0, 3);
     // auto h1 = std::make_shared<Histogram<>>(vectorStr{"duration"});
     // h1->Linear(1.0, 1.0, 3);
-    auto h1 = std::make_shared<Histogram<>>(vectorStr{"duration"}, Buckets<double>{1.0, 2.0, 3.0});
+    auto h1 = std::make_shared<Histogram<>>(vectorStr{"duration"});
+    h1->Buckets({1.0, 2.0, 3.0});
     // auto h1 = std::make_shared<Histogram<>>(Buckets<double>{1.0, 2.0, 3.0});
 
     h1->Observe(0.5);
