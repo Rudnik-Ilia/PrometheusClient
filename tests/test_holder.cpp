@@ -47,7 +47,7 @@ int main()
     // LOG(holder->GetData());
 
     // // auto h_1 = prometheus<Histogram, double>::MakeMetric("histo_latency", "help_histo", {"request", "CPU"}, {"get", "idle"});
-    auto group_histo = prometheus<Histogram, double>::Group("timeout", "measure_timeout", {"client"});
+    auto group_histo = prometheus<Histogram, double>::GetGroup("timeout", "measure_timeout", {"client"});
 
     auto h_2 = group_histo->AddValues({"DB"});
     h_2->Buckets({111, 222, 333});

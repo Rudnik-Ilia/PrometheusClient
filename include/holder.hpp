@@ -3,7 +3,7 @@
 #include <sstream>
 #include <vector>
 #include "init.hpp"
-#include "IMetric.hpp"
+#include "IBaseGroup.hpp"
 
 /**
  * @brief Clas represets a storage for all existing metrics.
@@ -13,7 +13,7 @@
 class Holder: public NonCopy
 {
     public:
-        void RegistrateMetric(std::shared_ptr<IMetric> metric);
+        void RegistrateMetric(std::shared_ptr<IBaseGroup> metric);
 
         std::string GetData();
 
@@ -21,7 +21,7 @@ class Holder: public NonCopy
         size_t GetSize() const;
 
     private:
-        std::vector<std::shared_ptr<IMetric>> m_storage_group{};
+        std::vector<std::shared_ptr<IBaseGroup>> m_storage_group{};
         std::ostringstream m_oss{};
 };
 

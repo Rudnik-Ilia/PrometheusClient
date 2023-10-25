@@ -3,7 +3,7 @@
 #include <vector>
 #include "../include/holder.hpp"
 
-void Holder::RegistrateMetric(std::shared_ptr<IMetric> metric)
+void Holder::RegistrateMetric(std::shared_ptr<IBaseGroup> metric)
 {
     m_storage_group.push_back(metric);
 }

@@ -1,12 +1,13 @@
 #pragma once
 
+#include <iostream>
 #include <vector>
 
-class IMetric
+class IBaseGroup
 {
     public:
-        IMetric() = default;
-        virtual ~IMetric() = default;
+        IBaseGroup() = default;
+        virtual ~IBaseGroup() = default;
 
     virtual std::vector<std::string> GetLabels() const = 0;
 

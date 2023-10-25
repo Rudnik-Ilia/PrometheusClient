@@ -5,12 +5,11 @@
 #include <sstream>
 
 #include "init.hpp"
-#include "IMetric.hpp"
+#include "IBaseGroup.hpp"
 #include "counter.hpp"
 #include "gauge.hpp"
 #include "histogram.hpp"
 
-// #include "holder.hpp"
 /**
  * @brief Group of metrics.
  *        Accumulate several metric with the same type under the same name and help. 
@@ -22,17 +21,17 @@
  */
 
 template<class T>
-class Metric : public IMetric
+class Group : public IBaseGroup
 {
     public:
-        Metric(std::string&& name, std::string&& help, std::vector<std::string>&& label_names = {}): 
+        Group(std::string&& name, std::string&& help, std::vector<std::string>&& label_names = {}): 
             m_name(std::move(name)), 
             m_help(std::move(help)), 
             m_label_names(std::move(label_names)),
             m_type(DefineSelfType())
             {}
 
-        ~Metric() = default;
+        ~Group() = default;
 
         template <typename... Args>
         std::shared_ptr<T> Build(Args&& ...args)
