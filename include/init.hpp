@@ -1,12 +1,5 @@
 #pragma once
 
-#include <vector>
-#include <atomic>
-#include <iostream>
-#include <memory>
-
-#include "anxilary_functions.hpp"
-
 struct Delete
 {
     Delete() = delete;
@@ -40,7 +33,7 @@ const std::string COUNTER_STR = "counter";
 const std::string GAUGE_STR = "gauge";
 const std::string HISTOGRAM_STR = "histogram";
 const std::string SUMMARY_STR = "summary";
-const std::string UNTYPED_STR = "summary";
+const std::string UNTYPED_STR = "untyped";
 
 
 const std::string HELP = "# HELP ";

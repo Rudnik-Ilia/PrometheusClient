@@ -1,8 +1,7 @@
 #pragma once
 
-#include "init.hpp"
-#include "../include/anxilary_functions.hpp"
-#include "../include/gauge.hpp"
+#include "anxilary_functions.hpp"
+#include "gauge.hpp"
 #include "IBaseMetric.hpp"
 
 typedef std::chrono::hours HOUR;

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "init.hpp"
-
 /**
  * @brief Base class for all metrics.
  *

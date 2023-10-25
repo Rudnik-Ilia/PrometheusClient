@@ -1,15 +1,9 @@
 #pragma once
 
-#include "init.hpp"
-#include "anxilary_functions.hpp"
 #include "metric.hpp"
-#include "gauge.hpp"
-#include "histogram.hpp"
 #include "holder.hpp"
 #include "singleton.hpp"
 
-
-// ***************************************************************************************************************
 
 template <template <typename> class Type, class T = int64_t>
 class prometheus

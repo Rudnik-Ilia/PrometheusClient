@@ -4,8 +4,6 @@
 #include <functional>
 #include <mutex>
 
-#include "init.hpp"
-
 template<class T>
 class Singleton: public Delete
 {

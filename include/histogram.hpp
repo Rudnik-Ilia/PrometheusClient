@@ -4,11 +4,6 @@
 #include <utility>  
 #include <limits>
 
-#include "init.hpp"
-#include "gauge.hpp"
-#include "../include/counter.hpp"
-#include "../include/anxilary_functions.hpp"
-
 template <class T>
 using BucketsLimit = std::vector<T>;
 /**
@@ -65,19 +60,19 @@ class Histogram : public IBaseMetric
             m_iterator = m_bound_counter.begin();
         }
 
-        void Observe(T value)
-        {
-            auto iter = m_bound_counter.lower_bound(value);
-            if(iter != m_bound_counter.end())
-            {
-                while (iter != m_bound_counter.end())
-                {
-                    iter->second.Inc();
-                    ++iter;
-                }
-            }
-            m_gauge_summ.Inc(value);
-        }
+        // void Observe(T value)
+        // {
+        //     auto iter = m_bound_counter.lower_bound(value);
+        //     if(iter != m_bound_counter.end())
+        //     {
+        //         while (iter != m_bound_counter.end())
+        //         {
+        //             iter->second.Inc();
+        //             ++iter;
+        //         }
+        //     }
+        //     m_gauge_summ.Inc(value);
+        // }
 
         void Reset()
         {
@@ -89,10 +84,11 @@ class Histogram : public IBaseMetric
 
         std::pair<std::string, std::string> GetValueAsString()
         {
-            std::cout << "ITERATOR: " << m_iterator->first << std::endl;
-            m_iterator++;
-            return std::make_pair(std::to_string(m_iterator->first), m_iterator->second.GetValueAsString().first); 
-            // return std::make_pair("0.0", "7.9"); 
+            // std::cout << "ITERATOR: " << m_iterator->first << std::endl;
+            std::cout << "ITERATOR: " << std::endl;
+            // ++m_iterator;
+            // return std::make_pair(std::to_string(m_iterator->first), m_iterator->second.GetValueAsString().first); 
+            return std::make_pair("0.0", "7.9"); 
         }
         
         // FOR TESTING

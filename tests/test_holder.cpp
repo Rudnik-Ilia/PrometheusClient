@@ -4,10 +4,12 @@
 #include <unistd.h>
 #include <typeinfo>
 
-#include "../include/init.hpp"
 #include "../include/prometheus.hpp"
-#include "../include/holder.hpp"
-#include "../include/singleton.hpp"
+
+#include "../include/counter.hpp"
+
+
+// g++ --std=c++17 test_holder.cpp ../src/holder.cpp ../src/anxilary_functions.cpp 
 
 int main()
 {
@@ -36,17 +38,15 @@ int main()
     // LOG(Family_1->GetTypeAsString());
     // LOG(Family_2->GetTypeAsString());
 
-
-    // holder->Bridge();
-    LOG("************************************************************************");
+    // LOG("************************************************************************");
     // LOG(holder->GetData());
 
     // g_1->SetTimeNow();
 
-    LOG("************************************************************************");
+    // LOG("************************************************************************");
     // LOG(holder->GetData());
 
-    // auto h_1 = prometheus<Histogram, double>::MakeMetric("histo_latency", "help_histo", {"request", "CPU"}, {"get", "idle"});
+    // // auto h_1 = prometheus<Histogram, double>::MakeMetric("histo_latency", "help_histo", {"request", "CPU"}, {"get", "idle"});
     auto group_histo = prometheus<Histogram, double>::Group("timeout", "measure_timeout", {"client"});
 
     auto h_2 = group_histo->AddValues({"DB"});
@@ -62,7 +62,7 @@ int main()
     LOG(holder->GetData());
     LOG("************************************************************************");
 
-    h_2->Show();
+    // h_2->Show();
 
     // h_1->Size();
 

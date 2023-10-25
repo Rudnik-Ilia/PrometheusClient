@@ -5,12 +5,12 @@
 #include <sstream>
 
 #include "init.hpp"
-#include "counter.hpp"
-#include "holder.hpp"
 #include "IMetric.hpp"
+#include "counter.hpp"
 #include "gauge.hpp"
 #include "histogram.hpp"
 
+// #include "holder.hpp"
 /**
  * @brief Group of metrics.
  *        Accumulate several metric with the same type under the same name and help. 
@@ -145,7 +145,7 @@ class Metric : public IMetric
                         continue;
                     }
 
-                    for(size_t k = 0; k < 4; ++k)
+                    for(size_t k = 0; k < 3; ++k)
                     {
                         result += m_name;
                         result += _BUCKET;
