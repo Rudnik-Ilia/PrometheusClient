@@ -4,6 +4,8 @@
 #include <utility>  
 #include <limits>
 
+#include "outScope.hpp"
+
 template <class T>
 using BucketsLimit = std::vector<T>;
 /**
@@ -22,50 +24,50 @@ class Histogram : public IBaseMetric
     public:
         Histogram(std::vector<std::string>&& label_values = {}): IBaseMetric(std::move(label_values)), m_gauge_summ()
         {
-            m_bound_counter.emplace(std::make_pair(std::numeric_limits<T>::infinity(), std::vector<std::string>{}));
+            m_bounds_counters.emplace(std::make_pair(std::numeric_limits<T>::infinity(), std::vector<std::string>{}));
         }
 
         void Buckets(const std::vector<T>& bounds)
         {
             for(size_t i = 0; i < bounds.size(); ++i)
             {
-                m_bound_counter.emplace(std::make_pair(bounds[i], std::vector<std::string>{}));
+                m_bounds_counters.emplace(std::make_pair(bounds[i], std::vector<std::string>{}));
             }
-            m_iterator = m_bound_counter.begin();
+            m_iterator = m_bounds_counters.begin();
         }
 
         void LinearBuckets(T start, T step, uint64_t count)
         {            
             T value_to_insert = start;
-            m_bound_counter.emplace(std::make_pair(value_to_insert, std::vector<std::string>{}));
+            m_bounds_counters.emplace(std::make_pair(value_to_insert, std::vector<std::string>{}));
             
             for(size_t i = 0; i < count - 1; ++i)
             {
                 value_to_insert += step;
-                m_bound_counter.emplace(std::make_pair(value_to_insert, std::vector<std::string>{}));
+                m_bounds_counters.emplace(std::make_pair(value_to_insert, std::vector<std::string>{}));
             }
-            m_iterator = m_bound_counter.begin();
+            m_iterator = m_bounds_counters.begin();
         }
 
         void ExponentialBuckets(T start, T factor, uint64_t count)
         {
             T value_to_insert = start;
-            m_bound_counter.emplace(std::make_pair(value_to_insert, std::vector<std::string>{}));
+            m_bounds_counters.emplace(std::make_pair(value_to_insert, std::vector<std::string>{}));
 
             for(size_t i = 0; i < count - 1; ++i)
             {
                 value_to_insert *= factor;
-                m_bound_counter.emplace(std::make_pair(value_to_insert, std::vector<std::string>{}));
+                m_bounds_counters.emplace(std::make_pair(value_to_insert, std::vector<std::string>{}));
             }
-            m_iterator = m_bound_counter.begin();
+            m_iterator = m_bounds_counters.begin();
         }
 
         void Observe(T value)
         {
-            auto iter = m_bound_counter.lower_bound(value);
-            if(iter != m_bound_counter.end())
+            auto iter = m_bounds_counters.lower_bound(value);
+            if(iter != m_bounds_counters.end())
             {
-                while (iter != m_bound_counter.end())
+                while (iter != m_bounds_counters.end())
                 {
                     iter->second.Inc();
                     ++iter;
@@ -76,25 +78,25 @@ class Histogram : public IBaseMetric
 
         void Reset()
         {
-            for(auto& iter : m_bound_counter)
+            for(auto& iter : m_bounds_counters)
             {
                 iter.second.Reset();
             }
         }
 
-        std::pair<std::string, std::string> GetValueAsString() const
+        std::pair<std::string, std::string> GetValueAsString() const override
         {
-            // std::cout << "ITERATOR: " << m_iterator->first << std::endl;
-            std::cout << "ITERATOR: " << std::endl;
-            // ++m_iterator;
-            // return std::make_pair(std::to_string(m_iterator->first), m_iterator->second.GetValueAsString().first); 
-            return std::make_pair("0.0", "7.9"); 
+            OutScope<T> out_act(m_iterator);
+
+            std::pair<std::string, std::string> bucket_value({std::to_string(m_iterator->first), m_iterator->second.GetValueAsString().first}); 
+            ++m_iterator;
+            return bucket_value;
         }
         
         // FOR TESTING
         void Show()
         {
-            for(auto &iter : m_bound_counter)
+            for(auto &iter : m_bounds_counters)
             {
                 LOG("bucket: ");
                 LOG(iter.first);
@@ -106,11 +108,11 @@ class Histogram : public IBaseMetric
 
         void Size()
         {
-            LOG(m_bound_counter.size());
+            LOG(m_bounds_counters.size());
         }
 
     private:
         Gauge<T> m_gauge_summ;
-        std::map<T, Counter<T>> m_bound_counter{};
-        typename std::map<T, Counter<T>>::iterator m_iterator{};
+        std::map<T, Counter<T>> m_bounds_counters{};
+        mutable typename std::map<T, Counter<T>>::iterator m_iterator{};
 };

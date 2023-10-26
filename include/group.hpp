@@ -139,7 +139,7 @@ class Group : public IBaseGroup
                         continue;
                     }
 
-                    for(size_t k = 0; k < 3; ++k)
+                    for(size_t k = 0; k < 4; ++k)
                     {
                         result += m_name;
                         result += _BUCKET;
@@ -156,13 +156,15 @@ class Group : public IBaseGroup
                                 result += COMMA;
                             }
                         }
+
+                        std::pair<std::string, std::string> bucket_value(metric->GetValueAsString()); 
                         
                         result += COMMA;
                         result += LE;
-                        result += AddQuotes(metric->GetValueAsString().first);
+                        result += AddQuotes(bucket_value.first);
 
                         result += "} ";
-                        result += metric->GetValueAsString().second;
+                        result += bucket_value.second;
                         result += NEWLINE;
                     }
                 }
@@ -192,7 +194,7 @@ class Group : public IBaseGroup
         std::string m_name;
         std::string m_help;
         std::vector<std::string> m_label_names{};
-        std::vector<std::shared_ptr<T>> m_storage_metric{};
+        std::vector<std::shared_ptr<IBaseMetric>> m_storage_metric{};
 
         MetricType m_type;
 };

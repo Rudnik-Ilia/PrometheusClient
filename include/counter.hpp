@@ -23,7 +23,7 @@ class Counter: public IBaseMetric
         void Inc(T delta = 1.0);
 
         T GetValue() const;
-        std::pair<std::string, std::string> GetValueAsString() const;
+        std::pair<std::string, std::string> GetValueAsString() const override;
 
         /**
          * @brief Dror a counter to zero.

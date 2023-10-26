@@ -47,7 +47,7 @@ class Gauge: public IBaseMetric
         void SetTimeNow();
 
         T GetValue() const;
-        std::pair<std::string, std::string> GetValueAsString() const;
+        std::pair<std::string, std::string> GetValueAsString() const override;
 
     private:  
         std::atomic<T> m_value{}; 
