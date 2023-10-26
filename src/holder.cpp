@@ -13,7 +13,7 @@ size_t Holder::GetSize() const
     return m_storage_group.size();
 }
 
-std::string Holder::GetData()
+std::string Holder::CollectData()
 {
     std::string result;
 

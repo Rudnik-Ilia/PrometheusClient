@@ -37,7 +37,7 @@ class Group : public IBaseGroup
         std::shared_ptr<T> Build(Args&& ...args)
         {
             auto metric = std::make_shared<T>(std::move(std::vector{args})...);
-            m_storage.push_back(metric);
+            m_storage_metric.push_back(metric);
             return metric;
         }
 
@@ -46,7 +46,7 @@ class Group : public IBaseGroup
             assert(label_values.size() == m_label_names.size());
 
             auto metric = std::make_shared<T>(std::move(label_values));
-            m_storage.push_back(metric);
+            m_storage_metric.push_back(metric);
             return metric;
         }
 
@@ -82,11 +82,6 @@ class Group : public IBaseGroup
             return m_label_names;
         }
 
-        void Collect() override
-        {
-            std::cout << Serialize() << std::endl;
-        }
-
         std::string Serialize() const override
         {
             const size_t label_size_group = m_label_names.size();
@@ -106,7 +101,7 @@ class Group : public IBaseGroup
             result += GetTypeAsString();
             result += NEWLINE;
 
-            for(auto& metric : m_storage)
+            for(auto& metric : m_storage_metric)
             {
                 if((this->m_type == MetricType::COUNTER) || (this->m_type == MetricType::GAUGE))
                 {
@@ -170,7 +165,6 @@ class Group : public IBaseGroup
                         result += metric->GetValueAsString().second;
                         result += NEWLINE;
                     }
-                    
                 }
             }
             return result;
@@ -198,7 +192,7 @@ class Group : public IBaseGroup
         std::string m_name;
         std::string m_help;
         std::vector<std::string> m_label_names{};
-        std::vector<std::shared_ptr<T>> m_storage{};
+        std::vector<std::shared_ptr<T>> m_storage_metric{};
 
         MetricType m_type;
 };
@@ -228,7 +222,7 @@ class Group : public IBaseGroup
         // std::shared_ptr<T> AddValues(Args&& ...args)
         // {
         //     auto metric = std::make_shared<T>(std::move(std::vector{args})...);
-        //     m_storage.push_back(metric);
+        //     m_storage_metric.push_back(metric);
         //     return metric;
         // }
 
@@ -237,12 +231,12 @@ class Group : public IBaseGroup
     // {
     //     std::cout << m_name << " {";  
 
-    //     for(size_t i = 0; i < m_storage.size(); ++i)
+    //     for(size_t i = 0; i < m_storage_metric.size(); ++i)
     //     {
     //         std::cout << "LOOP: " << i << std::endl;
-    //         std::cout << m_label_names[i] << " = " << '"'<< m_storage[j]->GetLabels()[i] << '"' << ",";
+    //         std::cout << m_label_names[i] << " = " << '"'<< m_storage_metric[j]->GetLabels()[i] << '"' << ",";
     //     }
     //     std::cout << " }"; 
-    //     std::cout << m_storage[j]->GetValueAsString();
+    //     std::cout << m_storage_metric[j]->GetValueAsString();
     //     std::cout << '\n';
     // }

@@ -60,19 +60,19 @@ class Histogram : public IBaseMetric
             m_iterator = m_bound_counter.begin();
         }
 
-        // void Observe(T value)
-        // {
-        //     auto iter = m_bound_counter.lower_bound(value);
-        //     if(iter != m_bound_counter.end())
-        //     {
-        //         while (iter != m_bound_counter.end())
-        //         {
-        //             iter->second.Inc();
-        //             ++iter;
-        //         }
-        //     }
-        //     m_gauge_summ.Inc(value);
-        // }
+        void Observe(T value)
+        {
+            auto iter = m_bound_counter.lower_bound(value);
+            if(iter != m_bound_counter.end())
+            {
+                while (iter != m_bound_counter.end())
+                {
+                    iter->second.Inc();
+                    ++iter;
+                }
+            }
+            m_gauge_summ.Inc(value);
+        }
 
         void Reset()
         {

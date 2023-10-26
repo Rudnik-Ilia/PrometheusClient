@@ -15,7 +15,7 @@ class Holder: public NonCopy
     public:
         void RegistrateMetric(std::shared_ptr<IBaseGroup> metric);
 
-        std::string GetData();
+        std::string CollectData();
 
 // FOR TESTING
         size_t GetSize() const;
