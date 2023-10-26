@@ -82,7 +82,7 @@ class Histogram : public IBaseMetric
             }
         }
 
-        std::pair<std::string, std::string> GetValueAsString()
+        std::pair<std::string, std::string> GetValueAsString() const
         {
             // std::cout << "ITERATOR: " << m_iterator->first << std::endl;
             std::cout << "ITERATOR: " << std::endl;

@@ -42,15 +42,11 @@ class Gauge: public IBaseMetric
         Timer<Measure> Track();
 
         void Inc(T delta = 1.0);
-
         void Dec(T delta = 1);
-
         void Set(T value);
-
         void SetTimeNow();
 
         T GetValue() const;
-
         std::pair<std::string, std::string> GetValueAsString() const;
 
     private:  
@@ -99,7 +95,7 @@ void Gauge<T>::SetTimeNow()
 }
 
 template<typename T>
-T Gauge<T>::GetValue() const
+T Gauge<T>::GetValue() const 
 {
     return m_value.load(std::memory_order_release);
 }
