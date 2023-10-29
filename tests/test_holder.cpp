@@ -5,9 +5,7 @@
 #include <typeinfo>
 
 #include "../include/prometheus.hpp"
-
 #include "../include/counter.hpp"
-
 
 // g++ --std=c++17 test_holder.cpp ../src/holder.cpp ../src/anxilary_functions.cpp 
 
@@ -58,6 +56,7 @@ int main()
     // h_1->LinearBuckets(1.0, 1, 3);
     // h_1->Observe(0);
     // h_1->Observe(1.2);
+    
     h_2->Observe(111.1);
 
     LOG("************************************************************************");

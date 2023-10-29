@@ -18,6 +18,5 @@ class OutScope
         }
 
     private:
-        // const std::map<T, Counter<T>>& m_bounds_counters{};
         typename std::map<T, Counter<T>>::iterator& m_iterator{};
 };

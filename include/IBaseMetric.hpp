@@ -14,7 +14,7 @@ class IBaseMetric
 
         std::vector<std::string> GetLabels() const;
 
-        virtual std::pair<std::string, std::string> GetValueAsString() const = 0;
+        virtual std::pair<std::string, std::string> GetValueAsString() = 0;
 
     private:
         std::vector<std::string> m_label_values{};

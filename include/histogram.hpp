@@ -84,12 +84,15 @@ class Histogram : public IBaseMetric
             }
         }
 
-        std::pair<std::string, std::string> GetValueAsString() const override
+        std::pair<std::string, std::string> GetValueAsString() override
         {
-            OutScope<T> out_act(m_iterator);
-
             std::pair<std::string, std::string> bucket_value({std::to_string(m_iterator->first), m_iterator->second.GetValueAsString().first}); 
-            ++m_iterator;
+            if(++m_iterator == m_bounds_counters.end())
+            {
+                LOG("END");
+                // bucket_value = std::make_pair();
+                m_iterator = m_bounds_counters.begin();
+            }
             return bucket_value;
         }
         

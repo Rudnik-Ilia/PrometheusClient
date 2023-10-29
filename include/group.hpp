@@ -138,6 +138,8 @@ class Group : public IBaseGroup
                     {
                         continue;
                     }
+                    
+                    // K - value only for testing, need to get it from histo!
 
                     for(size_t k = 0; k < 4; ++k)
                     {
@@ -161,12 +163,22 @@ class Group : public IBaseGroup
                         
                         result += COMMA;
                         result += LE;
-                        result += AddQuotes(bucket_value.first);
+
+                        result += AddQuotes((k == 3) ? INF : bucket_value.first);
 
                         result += "} ";
                         result += bucket_value.second;
                         result += NEWLINE;
                     }
+
+                    result += m_name;
+                    result += _SUM;
+                    result += " 7777";
+                    result += NEWLINE;
+                    result += m_name;
+                    result += _COUNT;
+                    result += " 7777";
+                    result += NEWLINE;
                 }
             }
             return result;

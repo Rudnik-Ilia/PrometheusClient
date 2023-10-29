@@ -47,7 +47,7 @@ class Gauge: public IBaseMetric
         void SetTimeNow();
 
         T GetValue() const;
-        std::pair<std::string, std::string> GetValueAsString() const override;
+        std::pair<std::string, std::string> GetValueAsString() override;
 
     private:  
         std::atomic<T> m_value{}; 
@@ -101,7 +101,7 @@ T Gauge<T>::GetValue() const
 }
 
 template<typename T>
-std::pair<std::string, std::string> Gauge<T>::GetValueAsString() const
+std::pair<std::string, std::string> Gauge<T>::GetValueAsString()
 {
     return std::make_pair(std::to_string(m_value.load(std::memory_order_acquire)), "STUB");
 }
