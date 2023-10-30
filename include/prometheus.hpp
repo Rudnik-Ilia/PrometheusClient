@@ -24,6 +24,7 @@ class prometheus
             Singleton<Holder>::GetInstance()->RegistrateMetric(group_ptr);
 
             auto metric = group_ptr->Build(std::move(label_values));
+            
             return metric;
         }
 };

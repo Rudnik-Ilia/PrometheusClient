@@ -138,10 +138,10 @@ class Group : public IBaseGroup
                     {
                         continue;
                     }
-                    
-                    // K - value only for testing, need to get it from histo!
 
-                    for(size_t k = 0; k < 4; ++k)
+                    int64_t size_of_buckets = metric->GetSize();
+
+                    for(size_t k = 0; k < size_of_buckets; ++k)
                     {
                         result += m_name;
                         result += _BUCKET;
@@ -164,7 +164,7 @@ class Group : public IBaseGroup
                         result += COMMA;
                         result += LE;
 
-                        result += AddQuotes((k == 3) ? INF : bucket_value.first);
+                        result += AddQuotes((k == size_of_buckets - 1) ? INF : bucket_value.first);
 
                         result += "} ";
                         result += bucket_value.second;

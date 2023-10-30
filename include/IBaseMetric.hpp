@@ -13,6 +13,7 @@ class IBaseMetric
         virtual ~IBaseMetric() = default;
 
         std::vector<std::string> GetLabels() const;
+        virtual int64_t GetSize() const;
 
         virtual std::pair<std::string, std::string> GetValueAsString() = 0;
 
@@ -25,4 +26,9 @@ IBaseMetric::IBaseMetric(std::vector<std::string>&& labels_values): m_label_valu
 std::vector<std::string> IBaseMetric::GetLabels() const
 {
     return m_label_values;
+}
+
+int64_t IBaseMetric::GetSize() const
+{
+    return 1;
 }

@@ -21,6 +21,7 @@ typedef std::chrono::nanoseconds NANOSEC;
  * @param label_values Value of Labels, for example "method = get", "get" is label value. You may specify or not.
  *        Amount of label values MUST be the same as label names specifued in Metric.      
  */
+
 template<class T = int64_t>
 class Gauge: public IBaseMetric
 {

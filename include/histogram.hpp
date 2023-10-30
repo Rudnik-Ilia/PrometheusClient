@@ -96,6 +96,11 @@ class Histogram : public IBaseMetric
             return bucket_value;
         }
         
+        int64_t GetSize() const override
+        {
+            return m_bounds_counters.size();
+        }
+
         // FOR TESTING
         void Show()
         {
@@ -107,11 +112,6 @@ class Histogram : public IBaseMetric
             }
             LOG("_summ: ");
             LOG(m_gauge_summ.GetValue());
-        }
-
-        void Size()
-        {
-            LOG(m_bounds_counters.size());
         }
 
     private:

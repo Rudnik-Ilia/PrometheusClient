@@ -77,5 +77,4 @@ template<class T>
 std::pair<std::string, std::string> Counter<T>::GetValueAsString()
 {
     return std::make_pair(std::to_string(m_value.load(std::memory_order_acquire)), "STUB");
-    
 }

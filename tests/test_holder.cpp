@@ -13,7 +13,7 @@ int main()
 {
     auto holder = Singleton<Holder>::GetInstance();
 
-    // auto c_1 = prometheus<Counter, int64_t>::GetMetric("base_counter", "every request", {"HTTP"},{"all"});
+    // auto c_1 = prometheus<Counter, double>::GetMetric("base_counter", "every request", {"HTTP"},{"all"});
 
     // auto Family_1 = prometheus<Counter, int64_t>::GetGroup("count_from_family_1", "help fam_1", {"method", "errors", "id"});
 
@@ -27,7 +27,7 @@ int main()
     // auto g_1 = Family_2->AddValues({"idle"});
 
     // {
-    //     auto gg = g_1->Track<MICROSEC>();
+    //     auto gg = g_1->Track<NANOSEC>();
     //     sleep(1);
     // }
 
@@ -49,7 +49,7 @@ int main()
     auto group_histo = prometheus<Histogram, double>::GetGroup("timeout", "measure_timeout", {"client"});
 
     auto h_2 = group_histo->AddValues({"DB"});
-    h_2->Buckets({111, 222, 333});
+    h_2->Buckets({111, 222, 333, 444, 555});
     
 
     // h_1->Buckets({1.0, 2.0, 3.0});
@@ -58,6 +58,9 @@ int main()
     // h_1->Observe(1.2);
     
     h_2->Observe(111.1);
+    h_2->Observe(333.1);
+    h_2->Observe(444.8);
+    h_2->Observe(0);
 
     LOG("************************************************************************");
     LOG(holder->CollectData());
@@ -65,8 +68,6 @@ int main()
     LOG(holder->CollectData());
 
     // h_2->Show();
-
-    // h_1->Size();
 
     return 0;
 }

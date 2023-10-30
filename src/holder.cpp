@@ -1,6 +1,7 @@
 
 #include <memory>
 #include <vector>
+
 #include "../include/holder.hpp"
 
 void Holder::RegistrateMetric(std::shared_ptr<IBaseGroup> metric)
