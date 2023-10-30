@@ -89,8 +89,6 @@ class Histogram : public IBaseMetric
             std::pair<std::string, std::string> bucket_value({std::to_string(m_iterator->first), m_iterator->second.GetValueAsString().first}); 
             if(++m_iterator == m_bounds_counters.end())
             {
-                LOG("END");
-                // bucket_value = std::make_pair();
                 m_iterator = m_bounds_counters.begin();
             }
             return bucket_value;
@@ -102,6 +100,7 @@ class Histogram : public IBaseMetric
         }
 
         // FOR TESTING
+        
         void Show()
         {
             for(auto &iter : m_bounds_counters)

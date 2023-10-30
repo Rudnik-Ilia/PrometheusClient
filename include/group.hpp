@@ -141,6 +141,8 @@ class Group : public IBaseGroup
 
                     int64_t size_of_buckets = metric->GetSize();
 
+                    std::pair<std::string, std::string> bucket_value{};
+
                     for(size_t k = 0; k < size_of_buckets; ++k)
                     {
                         result += m_name;
@@ -159,7 +161,8 @@ class Group : public IBaseGroup
                             }
                         }
 
-                        std::pair<std::string, std::string> bucket_value(metric->GetValueAsString()); 
+                        // std::pair<std::string, std::string> bucket_value(metric->GetValueAsString()); 
+                        bucket_value = metric->GetValueAsString(); 
                         
                         result += COMMA;
                         result += LE;
@@ -177,7 +180,8 @@ class Group : public IBaseGroup
                     result += NEWLINE;
                     result += m_name;
                     result += _COUNT;
-                    result += " 7777";
+                    result += SPACE;
+                    result += bucket_value.second;
                     result += NEWLINE;
                 }
             }
