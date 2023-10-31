@@ -10,8 +10,6 @@
 // g++ --std=c++17 test_holder.cpp ../src/holder.cpp ../src/anxilary_functions.cpp 
 std::vector<double> test_buckets_1{0.5, 1.0, 1.5, 2.0};
 
-
-
 int main()
 {
     auto holder = Singleton<Holder>::GetInstance();

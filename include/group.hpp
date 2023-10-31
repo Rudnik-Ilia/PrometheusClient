@@ -161,7 +161,6 @@ class Group : public IBaseGroup
                             }
                         }
 
-                        // std::pair<std::string, std::string> bucket_value(metric->GetValueAsString()); 
                         bucket_value = metric->GetValueAsString(); 
                         
                         result += COMMA;
