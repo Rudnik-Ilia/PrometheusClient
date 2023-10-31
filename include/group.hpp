@@ -176,7 +176,8 @@ class Group : public IBaseGroup
 
                     result += m_name;
                     result += _SUM;
-                    result += " 7777";
+                    result += SPACE;
+                    result += bucket_value.first;
                     result += NEWLINE;
                     result += m_name;
                     result += _COUNT;

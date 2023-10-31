@@ -28,6 +28,14 @@ std::vector<std::string> IBaseMetric::GetLabels() const
     return m_label_values;
 }
 
+/**
+ * @brief Return size of buckets
+ * If metric doest have buckets return 1 by default.
+ *
+ * @param no param
+ * @return 1 or size of bucket vector
+ */
+
 int64_t IBaseMetric::GetSize() const
 {
     return 1;

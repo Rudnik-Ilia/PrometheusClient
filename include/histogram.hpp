@@ -18,7 +18,7 @@ using BucketsLimit = std::vector<T>;
  *        Amount of label values MUST be the same as label names specifued in Metric.      
  * @param vector of bounds(buckets), each bucket has type T.      
  */
-template<class T = double>
+template<class T = double, typename = std::enable_if_t<std::is_same_v<T, double> || std::is_same_v<T, int64_t>>>
 class Histogram : public IBaseMetric
 {
     public:
@@ -33,7 +33,7 @@ class Histogram : public IBaseMetric
             {
                 m_bounds_counters.emplace(std::make_pair(bounds[i], std::vector<std::string>{}));
             }
-            m_iterator = m_bounds_counters.begin();
+            Iter_On_First();
         }
 
         void LinearBuckets(T start, T step, uint64_t count)
@@ -46,7 +46,7 @@ class Histogram : public IBaseMetric
                 value_to_insert += step;
                 m_bounds_counters.emplace(std::make_pair(value_to_insert, std::vector<std::string>{}));
             }
-            m_iterator = m_bounds_counters.begin();
+            Iter_On_First();
         }
 
         void ExponentialBuckets(T start, T factor, uint64_t count)
@@ -59,7 +59,7 @@ class Histogram : public IBaseMetric
                 value_to_insert *= factor;
                 m_bounds_counters.emplace(std::make_pair(value_to_insert, std::vector<std::string>{}));
             }
-            m_iterator = m_bounds_counters.begin();
+            Iter_On_First();
         }
 
         void Observe(T value)
@@ -89,7 +89,9 @@ class Histogram : public IBaseMetric
             std::pair<std::string, std::string> bucket_value({std::to_string(m_iterator->first), m_iterator->second.GetValueAsString().first}); 
             if(++m_iterator == m_bounds_counters.end())
             {
-                m_iterator = m_bounds_counters.begin();
+                Iter_On_Last();
+                bucket_value = std::make_pair(std::to_string(m_gauge_summ.GetValue()), m_iterator->second.GetValueAsString().first);
+                Iter_On_First();
             }
             return bucket_value;
         }
@@ -99,8 +101,12 @@ class Histogram : public IBaseMetric
             return m_bounds_counters.size();
         }
 
+        T GetValue() const
+        {
+            m_gauge_summ.GetValue();
+        }
+
         // FOR TESTING
-        
         void Show()
         {
             for(auto &iter : m_bounds_counters)
@@ -114,6 +120,18 @@ class Histogram : public IBaseMetric
         }
 
     private:
+
+        void Iter_On_First()
+        {
+            m_iterator = m_bounds_counters.begin();
+        }
+
+        void Iter_On_Last()
+        {
+            m_iterator = m_bounds_counters.end();
+            --m_iterator;
+        }
+
         Gauge<T> m_gauge_summ;
         std::map<T, Counter<T>> m_bounds_counters{};
         mutable typename std::map<T, Counter<T>>::iterator m_iterator{};
