@@ -221,6 +221,132 @@ class Group : public IBaseGroup
 
 
 
+        // template<typename U = T, std::enable_if_t<std::is_same_v<U, Counter<int64_t>>, int > = 0 >
+        // std::string Serialize() const override
+        // {
+        //     const size_t label_size_group = m_label_names.size();
+        //     size_t value_size_metric = 0;
+
+        //     std::string result;
+        //     result.reserve(1024);
+
+        //     result += HELP;
+        //     result += m_name;
+        //     result += SPACE;
+        //     result += m_help;
+        //     result += NEWLINE;
+        //     result += TYPE;
+        //     result += m_name;
+        //     result += SPACE;
+        //     result += GetTypeAsString();
+        //     result += NEWLINE;
+
+        //     for(auto& metric : m_storage_metric)
+        //     {
+        //         value_size_metric = metric->GetLabels().size();
+
+        //         if(label_size_group != value_size_metric)
+        //         {
+        //             continue;
+        //         }
+
+        //         result += m_name;
+        //         result += "{";
+
+        //         for(size_t i = 0; i < value_size_metric; ++i)
+        //         {
+        //             result += m_label_names[i];
+        //             result += "=";
+        //             result += AddQuotes(metric->GetLabels()[i]);
+        //             if(i < (value_size_metric - 1))
+        //             {
+        //                 result += COMMA;
+        //             }
+        //         }
+
+        //         result += "} ";
+        //         result += metric->GetValueAsString().first;
+        //         result += NEWLINE;
+        //     }
+        //     return result;
+        // }
+
+        // template<typename U = T, std::enable_if_t<std::is_same_v<U, Histogram<int64_t>>, int > = 0 >
+        // std::string Serialize() const override
+        // {
+        //     const size_t label_size_group = m_label_names.size();
+        //     size_t value_size_metric = 0;
+
+        //     std::string result;
+        //     result.reserve(1024);
+
+        //     result += HELP;
+        //     result += m_name;
+        //     result += SPACE;
+        //     result += m_help;
+        //     result += NEWLINE;
+        //     result += TYPE;
+        //     result += m_name;
+        //     result += SPACE;
+        //     result += GetTypeAsString();
+        //     result += NEWLINE;
+
+        //     for(auto& metric : m_storage_metric)
+        //     {
+        //         value_size_metric = metric->GetLabels().size();
+
+        //         if(label_size_group != value_size_metric)
+        //         {
+        //             continue;
+        //         }
+
+        //         int64_t size_of_buckets = metric->GetSize();
+
+        //         std::pair<std::string, std::string> bucket_value{};
+
+        //         for(size_t k = 0; k < size_of_buckets; ++k)
+        //         {
+        //             result += m_name;
+        //             result += _BUCKET;
+        //             result += "{";
+
+        //             for(size_t i = 0; i < value_size_metric; ++i)
+        //             {
+        //                 result += m_label_names[i];
+        //                 result += "=";
+        //                 result += AddQuotes(metric->GetLabels()[i]);
+
+        //                 if(i < (value_size_metric - 1))
+        //                 {
+        //                     result += COMMA;
+        //                 }
+        //             }
+
+        //             bucket_value = metric->GetValueAsString(); 
+                    
+        //             result += COMMA;
+        //             result += LE;
+
+        //             result += AddQuotes((k == size_of_buckets - 1) ? INF : bucket_value.first);
+
+        //             result += "} ";
+        //             result += bucket_value.second;
+        //             result += NEWLINE;
+        //         }
+
+        //         result += m_name;
+        //         result += _SUM;
+        //         result += SPACE;
+        //         result += bucket_value.first;
+        //         result += NEWLINE;
+        //         result += m_name;
+        //         result += _COUNT;
+        //         result += SPACE;
+        //         result += bucket_value.second;
+        //         result += NEWLINE;
+        //     }
+        //     return result;
+        // }
 
 
 

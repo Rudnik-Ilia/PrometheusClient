@@ -1,9 +1,8 @@
 #include <iostream>
 #include <unistd.h>
 
-#include "../include/prometheus.hpp"
+#include "include/prometheus.hpp"
 
-// g++ --std=c++17 test_holder.cpp ../src/holder.cpp ../src/anxilary_functions.cpp 
 std::vector<double> test_buckets_1{0.5, 1.0, 1.5, 2.0};
 
 int main()
@@ -41,26 +40,11 @@ int main()
     LOG("************************************************************************");
     LOG(holder->CollectData());
 
-    // // auto h_1 = prometheus<Histogram, double>::MakeMetric("histo_latency", "help_histo", {"request", "CPU"}, {"get", "idle"});
-
     auto group_histo = prometheus<Histogram, double>::GetGroup("timeout", "measure_timeout", {"client"});
 
     auto h_2 = group_histo->AddValues({"DB"});
 
-    // h_2->Buckets({111, 222, 333, 444, 555});
     h_2->Buckets(test_buckets_1);
-    
-
-    // h_2->Buckets({0.5, 1.0, 1.5, 2.0});
-    // h_1->LinearBuckets(1.0, 1, 3);
-    // h_1->Observe(0);
-    // h_1->Observe(1.2);
-    
-    // h_2->Observe(111.1);
-    // h_2->Observe(333.1);
-    // h_2->Observe(444.8);
-    // h_2->Observe(0);
-    
     h_2->Observe(0.1);
     h_2->Observe(1.7);
     h_2->Observe(0.6);
@@ -70,8 +54,5 @@ int main()
     LOG(holder->CollectData());
     LOG("************************************************************************");
     LOG(holder->CollectData());
-
-    // h_2->Show();
-
     return 0;
 }
