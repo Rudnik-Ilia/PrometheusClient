@@ -1,77 +1,109 @@
-#include <iostream>
-#include <unistd.h>
+#include <gtest/gtest.h>
+#include <string>
 
-#include "../include/prometheus.hpp"
+#include "prometheus.hpp"
 
-// g++ --std=c++17 test_holder.cpp ../src/holder.cpp ../src/anxilary_functions.cpp 
-std::vector<double> test_buckets_1{0.5, 1.0, 1.5, 2.0};
-
-int main()
+class HolderTest : public ::testing::Test
 {
-    auto holder = Singleton<Holder>::GetInstance();
-
-    auto c_1 = prometheus<Counter, double>::GetMetric("base_counter", "every request", {"HTTP"},{"all"});
-
-    auto Family_1 = prometheus<Counter, int64_t>::GetGroup("count_from_family_1", "help fam_1", {"method", "errors", "id"});
-
-    auto c_2 = Family_1->AddValues({"get", "simple", "345"});
-    auto c_3 = Family_1->AddValues({"post", "hard", "001"});
-
-    c_2->Inc(111);
-    c_3->Inc(88);
-
-    auto Family_2 = prometheus<Gauge, int64_t>::GetGroup("name_gauge", "help2", {"CPU"});
-    auto g_1 = Family_2->AddValues({"idle"});
-
+protected:
+    void SetUp() override
     {
-        auto gg = g_1->Track<NANOSEC>();
-        sleep(1);
+        holder = Singleton<Holder>::GetInstance();
     }
 
-    LOG(holder->GetSize());
+    Holder* holder;
+};
 
-    LOG(Family_1->GetTypeAsString());
-    LOG(Family_2->GetTypeAsString());
+TEST_F(HolderTest, RegisterCounter)
+{
+    size_t initial_size = holder->GetSize();
 
-    LOG("************************************************************************");
-    LOG(holder->CollectData());
+    auto counter = prometheus<Counter, int64_t>::GetMetric(
+        "test_counter_" + std::to_string(initial_size),
+        "Test counter metric",
+        {"method"},
+        {"GET"});
 
-    g_1->SetTimeNow();
+    EXPECT_EQ(holder->GetSize(), initial_size + 1);
+}
 
-    LOG("************************************************************************");
-    LOG(holder->CollectData());
+TEST_F(HolderTest, RegisterGauge)
+{
+    size_t initial_size = holder->GetSize();
 
-    // // auto h_1 = prometheus<Histogram, double>::MakeMetric("histo_latency", "help_histo", {"request", "CPU"}, {"get", "idle"});
+    auto gauge = prometheus<Gauge, double>::GetMetric(
+        "test_gauge_" + std::to_string(initial_size),
+        "Test gauge metric",
+        {"cpu"},
+        {"idle"});
 
-    auto group_histo = prometheus<Histogram, double>::GetGroup("timeout", "measure_timeout", {"client"});
+    EXPECT_EQ(holder->GetSize(), initial_size + 1);
+}
 
-    auto h_2 = group_histo->AddValues({"DB"});
+TEST_F(HolderTest, CollectDataContainsHelp)
+{
+    auto counter = prometheus<Counter, int64_t>::GetMetric(
+        "collect_test_counter",
+        "Help text for testing",
+        {},
+        {});
 
-    // h_2->Buckets({111, 222, 333, 444, 555});
-    h_2->Buckets(test_buckets_1);
-    
+    counter->Inc(42);
 
-    // h_2->Buckets({0.5, 1.0, 1.5, 2.0});
-    // h_1->LinearBuckets(1.0, 1, 3);
-    // h_1->Observe(0);
-    // h_1->Observe(1.2);
-    
-    // h_2->Observe(111.1);
-    // h_2->Observe(333.1);
-    // h_2->Observe(444.8);
-    // h_2->Observe(0);
-    
-    h_2->Observe(0.1);
-    h_2->Observe(1.7);
-    h_2->Observe(0.6);
-    h_2->Observe(2.22);
+    std::string output = holder->CollectData();
+    EXPECT_TRUE(output.find("# HELP collect_test_counter") != std::string::npos);
+}
 
-    LOG("************************************************************************");
-    LOG(holder->CollectData());
-    LOG("************************************************************************");
-    LOG(holder->CollectData());
+TEST_F(HolderTest, CollectDataContainsType)
+{
+    auto counter = prometheus<Counter, int64_t>::GetMetric(
+        "type_test_counter",
+        "Type test",
+        {},
+        {});
 
-    // h_2->Show();
+    std::string output = holder->CollectData();
+    EXPECT_TRUE(output.find("# TYPE type_test_counter counter") != std::string::npos);
+}
 
-    return 0;
+TEST_F(HolderTest, GroupWithMultipleMetrics)
+{
+    size_t initial_size = holder->GetSize();
+
+    auto group = prometheus<Counter, int64_t>::GetGroup(
+        "http_requests_" + std::to_string(initial_size),
+        "Total HTTP requests",
+        {"method", "status"});
+
+    auto get_200 = group->AddValues({"GET", "200"});
+    auto post_201 = group->AddValues({"POST", "201"});
+    auto get_404 = group->AddValues({"GET", "404"});
+
+    get_200->Inc(100);
+    post_201->Inc(50);
+    get_404->Inc(5);
+
+    EXPECT_EQ(get_200->GetValue(), 100);
+    EXPECT_EQ(post_201->GetValue(), 50);
+    EXPECT_EQ(get_404->GetValue(), 5);
+}
+
+TEST_F(HolderTest, HistogramSerialization)
+{
+    auto group = prometheus<Histogram, double>::GetGroup(
+        "request_duration",
+        "Request duration in seconds",
+        {"handler"});
+
+    auto h = group->AddValues({"main"});
+    h->Buckets({0.1, 0.5, 1.0});
+
+    h->Observe(0.05);
+    h->Observe(0.3);
+    h->Observe(0.8);
+
+    std::string output = holder->CollectData();
+    EXPECT_TRUE(output.find("request_duration_bucket") != std::string::npos);
+    EXPECT_TRUE(output.find("request_duration_sum") != std::string::npos);
+    EXPECT_TRUE(output.find("request_duration_count") != std::string::npos);
 }

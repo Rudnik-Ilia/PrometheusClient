@@ -1,71 +1,92 @@
+#include <gtest/gtest.h>
 #include <thread>
-#include <mutex>
+#include <vector>
 
-#include "../include/counter.hpp"
-#include "../include/anxilary_functions.hpp"
-// g++ -std=c++17 test_counter.cpp -lpthread
+#include "counter.hpp"
 
-using vectorStr = std::vector<std::string>;
-std::mutex counterMutex{};
-
-int64_t COUNTER = 0;
-auto c1 = std::make_shared<Counter<int64_t>>(vectorStr{"GET"});
-auto c2 = std::make_shared<Counter<double>>(vectorStr{"POST"});
-
-
-void WorkTread(std::shared_ptr<Counter<int64_t>>& c1)
+TEST(CounterTest, DefaultValueIsZero)
 {
-    for(size_t i = 0; i < 1000000; ++i)
-    {
-        c1->Inc();
-    }
+    Counter<int64_t> counter;
+    EXPECT_EQ(counter.GetValue(), 0);
 }
 
-void WorkTread_1()
+TEST(CounterTest, IncrementByOne)
 {
-    for(size_t i = 0; i < 1000000; ++i)
-    {
-        std::lock_guard<std::mutex> lock(counterMutex);
-        ++COUNTER;
-    }
+    Counter<int64_t> counter;
+    counter.Inc();
+    EXPECT_EQ(counter.GetValue(), 1);
 }
 
-int main()
+TEST(CounterTest, IncrementByValue)
 {
-    Counter<double> c3;
-    
-    LOG(c1->GetValue());
-    // LOG(COUNTER);
+    Counter<int64_t> counter;
+    counter.Inc(5);
+    EXPECT_EQ(counter.GetValue(), 5);
+}
 
-    std::thread pool[2];
+TEST(CounterTest, MultipleIncrements)
+{
+    Counter<int64_t> counter;
+    counter.Inc(10);
+    counter.Inc(20);
+    counter.Inc(30);
+    EXPECT_EQ(counter.GetValue(), 60);
+}
 
-    for(size_t i = 0; i < 2; ++i)
+TEST(CounterTest, DoubleCounter)
+{
+    Counter<double> counter;
+    counter.Inc(1.5);
+    counter.Inc(2.5);
+    EXPECT_DOUBLE_EQ(counter.GetValue(), 4.0);
+}
+
+TEST(CounterTest, Reset)
+{
+    Counter<int64_t> counter;
+    counter.Inc(100);
+    counter.Reset();
+    EXPECT_EQ(counter.GetValue(), 0);
+}
+
+TEST(CounterTest, Labels)
+{
+    Counter<int64_t> counter(std::vector<std::string>{"GET", "200"});
+    auto labels = counter.GetLabels();
+    ASSERT_EQ(labels.size(), 2);
+    EXPECT_EQ(labels[0], "GET");
+    EXPECT_EQ(labels[1], "200");
+}
+
+TEST(CounterTest, ThreadSafety)
+{
+    Counter<int64_t> counter;
+    const int num_threads = 4;
+    const int increments_per_thread = 100000;
+
+    std::vector<std::thread> threads;
+    for (int i = 0; i < num_threads; ++i)
     {
-        pool[i] = std::thread(&WorkTread, std::ref(c1));
+        threads.emplace_back([&counter, increments_per_thread]() {
+            for (int j = 0; j < increments_per_thread; ++j)
+            {
+                counter.Inc();
+            }
+        });
     }
 
-    for(size_t i = 0; i < 2; ++i)
+    for (auto& t : threads)
     {
-        pool[i].join();
+        t.join();
     }
 
-    LOG(c1->GetValue());
-    // LOG(COUNTER);
+    EXPECT_EQ(counter.GetValue(), num_threads * increments_per_thread);
+}
 
-    LOG(c2->GetValue());
-    c2->Inc(3.33);
-    c1->Inc(3.33);
-    LOG(c2->GetValue());
-    LOG(c1->GetValue());
-    // c1->Reset();
-
-    LOG(c1->GetLabels()[0]);
-    LOG(c2->GetLabels()[0]);
-
-
-    LOG(c1->GetValueAsString());
-    LOG(c2->GetValueAsString());
-
-    
-    return 0;
+TEST(CounterTest, GetValueAsString)
+{
+    Counter<int64_t> counter;
+    counter.Inc(42);
+    auto result = counter.GetValueAsString();
+    EXPECT_EQ(result.first, "42");
 }

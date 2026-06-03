@@ -6,42 +6,29 @@
 #include "IBaseMetric.hpp"
 
 /**
- * @brief Class represent a counter.
- *
- * You can only increase the metric, default value or specify.
- *
- * @param T represent metrcic itself, double or int64 ONLY! default is int64.
- * @param label_values Value of Labels, for example "method = get", "get" is label value. You may specify or not.
- *        Amount of label values MUST be the same as label names specifued in Metric.      
+ * @brief Counter metric - can only be incremented.
+ * @tparam T Value type: double or int64_t (default: int64_t)
  */
 template<class T = int64_t>
-class Counter: public IBaseMetric
+class Counter : public IBaseMetric
 {
-    public:
-        explicit Counter(std::vector<std::string>&& label_values = {});
-        
-        void Inc(T delta = 1.0);
+public:
+    explicit Counter(std::vector<std::string>&& label_values = {});
 
-        T GetValue() const;
-        std::pair<std::string, std::string> GetValueAsString() override;
+    void Inc(T delta = 1.0);
+    void Reset();
 
-        /**
-         * @brief Dror a counter to zero.
-         *
-         * Used on for staff in side histogram, you can use in for your aim, but it prohibited
-         * in prometheus doc.
-         *
-         * @param no param
-         * @return void
-         */
-        void Reset();
+    T GetValue() const;
+    std::pair<std::string, std::string> GetValueAsString() override;
 
-    private:
-        std::atomic<T> m_value{};
+private:
+    std::atomic<T> m_value{};
 };
 
 template<class T>
-Counter<T>::Counter(std::vector<std::string>&& label_values) : IBaseMetric(std::move(label_values)) {}
+Counter<T>::Counter(std::vector<std::string>&& label_values)
+    : IBaseMetric(std::move(label_values))
+{}
 
 template<class T>
 void Counter<T>::Reset()
@@ -49,8 +36,8 @@ void Counter<T>::Reset()
     if constexpr (std::is_same_v<T, double>)
     {
         m_value.store(0.0, std::memory_order_release);
-    } 
-    else if constexpr (std::is_same_v<T, int64_t>) 
+    }
+    else if constexpr (std::is_same_v<T, int64_t>)
     {
         m_value.store(0, std::memory_order_release);
     }
@@ -63,8 +50,8 @@ void Counter<T>::Inc(T delta)
     do
     {
         current = m_value.load(std::memory_order_acquire);
-    } 
-    while(!m_value.compare_exchange_weak(current, current + delta));
+    }
+    while (!m_value.compare_exchange_weak(current, current + delta));
 }
 
 template<class T>

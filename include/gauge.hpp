@@ -1,70 +1,65 @@
 #pragma once
 
 #include "anxilary_functions.hpp"
-#include "gauge.hpp"
 #include "IBaseMetric.hpp"
 
-typedef std::chrono::hours HOUR;
-typedef std::chrono::minutes MINUTE;
-typedef std::chrono::seconds SECOND;
-typedef std::chrono::milliseconds MILLISEC;
-typedef std::chrono::microseconds  MICROSEC;
-typedef std::chrono::nanoseconds NANOSEC;
+using HOUR = std::chrono::hours;
+using MINUTE = std::chrono::minutes;
+using SECOND = std::chrono::seconds;
+using MILLISEC = std::chrono::milliseconds;
+using MICROSEC = std::chrono::microseconds;
+using NANOSEC = std::chrono::nanoseconds;
 
 /**
- * @brief Class represent a Gauge metric.
- *
- * You can increase and decrease the metric, also you can measure a period of time by Track<>,
- * specify measurment units that written above.
- *
- * @param T represent metrcic type value, double or int64 ONLY! default is int64.
- * @param label_values Value of Labels, for example "method = get", "get" is label value. You may specify or not.
- *        Amount of label values MUST be the same as label names specifued in Metric.      
+ * @brief Gauge metric - can increase, decrease, or be set to arbitrary values.
+ *        Supports time tracking via RAII Timer.
+ * @tparam T Value type: double or int64_t (default: int64_t)
  */
-
 template<class T = int64_t>
-class Gauge: public IBaseMetric
+class Gauge : public IBaseMetric
 {
+public:
+    explicit Gauge(std::vector<std::string>&& labels_values = {});
+
+    template <class Measure = SECOND>
+    class Timer
+    {
     public:
-        explicit Gauge(std::vector<std::string>&& labels_values = {});
+        explicit Timer(Gauge<T>& gauge);
+        ~Timer();
 
-        template <class Measure = SECOND>
-        class Timer
-        {
-            public:
-                Timer(Gauge<T>& gauge);
-                ~Timer();
-            private:
-                Gauge<T>& m_gauge;
-                T m_start;
-        };
+    private:
+        Gauge<T>& m_gauge;
+        T m_start;
+    };
 
-        template <class Measure = SECOND>
-        Timer<Measure> Track();
+    template <class Measure = SECOND>
+    Timer<Measure> Track();
 
-        void Inc(T delta = 1.0);
-        void Dec(T delta = 1);
-        void Set(T value);
-        void SetTimeNow();
+    void Inc(T delta = 1.0);
+    void Dec(T delta = 1);
+    void Set(T value);
+    void SetTimeNow();
 
-        T GetValue() const;
-        std::pair<std::string, std::string> GetValueAsString() override;
+    T GetValue() const;
+    std::pair<std::string, std::string> GetValueAsString() override;
 
-    private:  
-        std::atomic<T> m_value{}; 
+private:
+    std::atomic<T> m_value{};
 
-        template <class Measure = SECOND>
-        static T TimeNow()
-        {
-            auto currentTime = std::chrono::high_resolution_clock::now();
-            Measure secondsSinceEpoch = std::chrono::duration_cast<Measure>(currentTime.time_since_epoch());
-            T unixTime = secondsSinceEpoch.count();
-            return unixTime;
-        }
+    template <class Measure = SECOND>
+    static T TimeNow()
+    {
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<Measure>(currentTime.time_since_epoch());
+        return static_cast<T>(duration.count());
+    }
 };
 
 template<typename T>
-Gauge<T>::Gauge(std::vector<std::string>&& labels_values) : IBaseMetric(std::move(labels_values)){}
+Gauge<T>::Gauge(std::vector<std::string>&& labels_values)
+    : IBaseMetric(std::move(labels_values))
+{}
 
 template<typename T>
 void Gauge<T>::Inc(T delta)
@@ -73,8 +68,8 @@ void Gauge<T>::Inc(T delta)
     do
     {
         current = m_value.load(std::memory_order_acquire);
-    } 
-    while(!m_value.compare_exchange_weak(current, current + delta)); 
+    }
+    while (!m_value.compare_exchange_weak(current, current + delta));
 }
 
 template<typename T>
@@ -96,7 +91,7 @@ void Gauge<T>::SetTimeNow()
 }
 
 template<typename T>
-T Gauge<T>::GetValue() const 
+T Gauge<T>::GetValue() const
 {
     return m_value.load(std::memory_order_release);
 }
@@ -116,7 +111,10 @@ Gauge<T>::Timer<Measure> Gauge<T>::Track()
 
 template<typename T>
 template <class Measure>
-Gauge<T>::Timer<Measure>::Timer(Gauge<T>& gauge): m_gauge(gauge), m_start(TimeNow()){}
+Gauge<T>::Timer<Measure>::Timer(Gauge<T>& gauge)
+    : m_gauge(gauge)
+    , m_start(TimeNow<Measure>())
+{}
 
 template<typename T>
 template <class Measure>
@@ -124,4 +122,3 @@ Gauge<T>::Timer<Measure>::~Timer()
 {
     m_gauge.Set(TimeNow<Measure>() - m_start);
 }
-

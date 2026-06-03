@@ -1,138 +1,117 @@
 #pragma once
 
 #include <map>
-#include <utility>  
+#include <utility>
 #include <limits>
 
 #include "outScope.hpp"
 
 template <class T>
 using BucketsLimit = std::vector<T>;
+
 /**
- * @brief Class represent a Histigram metric.
- *
- * passing an empty vector to a pair for inizialization Counter<T>, because emplace() require values for Counter`s Ctor.
- *
- * @param T represent metrcic type value, double or int64 ONLY! default is int64.
- * @param label_values Value of Labels, for example "method = get", "get" is label value. You may specify or not.
- *        Amount of label values MUST be the same as label names specifued in Metric.      
- * @param vector of bounds(buckets), each bucket has type T.      
+ * @brief Histogram metric with configurable buckets.
+ * @tparam T Value type: double or int64_t (default: double)
  */
 template<class T = double, typename = std::enable_if_t<std::is_same_v<T, double> || std::is_same_v<T, int64_t>>>
 class Histogram : public IBaseMetric
 {
-    public:
-        Histogram(std::vector<std::string>&& label_values = {}): IBaseMetric(std::move(label_values)), m_gauge_summ()
+public:
+    explicit Histogram(std::vector<std::string>&& label_values = {})
+        : IBaseMetric(std::move(label_values))
+        , m_gauge_summ()
+    {
+        m_bounds_counters.emplace(std::make_pair(std::numeric_limits<T>::infinity(), std::vector<std::string>{}));
+    }
+
+    void Buckets(const std::vector<T>& bounds)
+    {
+        for (const auto& bound : bounds)
         {
-            m_bounds_counters.emplace(std::make_pair(std::numeric_limits<T>::infinity(), std::vector<std::string>{}));
+            m_bounds_counters.emplace(std::make_pair(bound, std::vector<std::string>{}));
         }
+        ResetIterator();
+    }
 
-        void Buckets(const std::vector<T>& bounds)
+    void LinearBuckets(T start, T step, uint64_t count)
+    {
+        T value = start;
+        m_bounds_counters.emplace(std::make_pair(value, std::vector<std::string>{}));
+
+        for (size_t i = 0; i < count - 1; ++i)
         {
-            for(size_t i = 0; i < bounds.size(); ++i)
-            {
-                m_bounds_counters.emplace(std::make_pair(bounds[i], std::vector<std::string>{}));
-            }
-            Iter_On_First();
+            value += step;
+            m_bounds_counters.emplace(std::make_pair(value, std::vector<std::string>{}));
         }
+        ResetIterator();
+    }
 
-        void LinearBuckets(T start, T step, uint64_t count)
-        {            
-            T value_to_insert = start;
-            m_bounds_counters.emplace(std::make_pair(value_to_insert, std::vector<std::string>{}));
-            
-            for(size_t i = 0; i < count - 1; ++i)
-            {
-                value_to_insert += step;
-                m_bounds_counters.emplace(std::make_pair(value_to_insert, std::vector<std::string>{}));
-            }
-            Iter_On_First();
-        }
+    void ExponentialBuckets(T start, T factor, uint64_t count)
+    {
+        T value = start;
+        m_bounds_counters.emplace(std::make_pair(value, std::vector<std::string>{}));
 
-        void ExponentialBuckets(T start, T factor, uint64_t count)
+        for (size_t i = 0; i < count - 1; ++i)
         {
-            T value_to_insert = start;
-            m_bounds_counters.emplace(std::make_pair(value_to_insert, std::vector<std::string>{}));
-
-            for(size_t i = 0; i < count - 1; ++i)
-            {
-                value_to_insert *= factor;
-                m_bounds_counters.emplace(std::make_pair(value_to_insert, std::vector<std::string>{}));
-            }
-            Iter_On_First();
+            value *= factor;
+            m_bounds_counters.emplace(std::make_pair(value, std::vector<std::string>{}));
         }
+        ResetIterator();
+    }
 
-        void Observe(T value)
+    void Observe(T value)
+    {
+        auto iter = m_bounds_counters.lower_bound(value);
+        while (iter != m_bounds_counters.end())
         {
-            auto iter = m_bounds_counters.lower_bound(value);
-            if(iter != m_bounds_counters.end())
-            {
-                while (iter != m_bounds_counters.end())
-                {
-                    iter->second.Inc();
-                    ++iter;
-                }
-            }
-            m_gauge_summ.Inc(value);
+            iter->second.Inc();
+            ++iter;
         }
+        m_gauge_summ.Inc(value);
+    }
 
-        void Reset()
+    void Reset()
+    {
+        for (auto& [bound, counter] : m_bounds_counters)
         {
-            for(auto& iter : m_bounds_counters)
-            {
-                iter.second.Reset();
-            }
+            counter.Reset();
         }
+    }
 
-        std::pair<std::string, std::string> GetValueAsString() override
-        {
-            std::pair<std::string, std::string> bucket_value({std::to_string(m_iterator->first), m_iterator->second.GetValueAsString().first}); 
-            if(++m_iterator == m_bounds_counters.end())
-            {
-                Iter_On_Last();
-                bucket_value = std::make_pair(std::to_string(m_gauge_summ.GetValue()), m_iterator->second.GetValueAsString().first);
-                Iter_On_First();
-            }
-            return bucket_value;
-        }
-        
-        int64_t GetSize() const override
-        {
-            return m_bounds_counters.size();
-        }
+    std::pair<std::string, std::string> GetValueAsString() override
+    {
+        std::pair<std::string, std::string> bucket_value(
+            std::to_string(m_iterator->first),
+            m_iterator->second.GetValueAsString().first);
 
-        T GetValue() const
+        if (++m_iterator == m_bounds_counters.end())
         {
-            m_gauge_summ.GetValue();
-        }
-
-        // FOR TESTING
-        void Show()
-        {
-            for(auto &iter : m_bounds_counters)
-            {
-                LOG("bucket: ");
-                LOG(iter.first);
-                LOG(iter.second.GetValue());
-            }
-            LOG("_summ: ");
-            LOG(m_gauge_summ.GetValue());
-        }
-
-    private:
-
-        void Iter_On_First()
-        {
-            m_iterator = m_bounds_counters.begin();
-        }
-
-        void Iter_On_Last()
-        {
-            m_iterator = m_bounds_counters.end();
             --m_iterator;
+            bucket_value = std::make_pair(
+                std::to_string(m_gauge_summ.GetValue()),
+                m_iterator->second.GetValueAsString().first);
+            ResetIterator();
         }
+        return bucket_value;
+    }
 
-        Gauge<T> m_gauge_summ;
-        std::map<T, Counter<T>> m_bounds_counters{};
-        mutable typename std::map<T, Counter<T>>::iterator m_iterator{};
+    int64_t GetSize() const override
+    {
+        return static_cast<int64_t>(m_bounds_counters.size());
+    }
+
+    T GetValue() const
+    {
+        return m_gauge_summ.GetValue();
+    }
+
+private:
+    void ResetIterator()
+    {
+        m_iterator = m_bounds_counters.begin();
+    }
+
+    Gauge<T> m_gauge_summ;
+    std::map<T, Counter<T>> m_bounds_counters{};
+    mutable typename std::map<T, Counter<T>>::iterator m_iterator{};
 };

@@ -6,22 +6,18 @@
 #include "IBaseGroup.hpp"
 
 /**
- * @brief Clas represets a storage for all existing metrics.
- *        This class is Singleton.
+ * @brief Global registry for all metric groups.
+ *        Used as a Singleton.
  */
-
-class Holder: public NonCopy
+class Holder : public NonCopy
 {
-    public:
-        void RegistrateMetric(std::shared_ptr<IBaseGroup> metric);
+public:
+    void RegistrateMetric(std::shared_ptr<IBaseGroup> metric);
+    std::string CollectData();
+    size_t GetSize() const;
 
-        std::string CollectData();
-
-// FOR TESTING
-        size_t GetSize() const;
-
-    private:
-        std::vector<std::shared_ptr<IBaseGroup>> m_storage_group{};
-        std::ostringstream m_oss{};
+private:
+    std::vector<std::shared_ptr<IBaseGroup>> m_storage_group{};
+    std::ostringstream m_oss{};
 };
 

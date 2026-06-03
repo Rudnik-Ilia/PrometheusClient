@@ -1,18 +1,21 @@
 #pragma once
 
 #include <atomic>
-#include <functional>
 #include <mutex>
 
+/**
+ * @brief Thread-safe singleton using double-checked locking.
+ * @tparam T The type to create as singleton
+ */
 template<class T>
-class Singleton: public Delete
+class Singleton : public Delete
 {
-    public:
-        static T *GetInstance();
-        
-    private:
-        static std::atomic<T*> s_ptr;
-        static void CleanUp();
+public:
+    static T* GetInstance();
+
+private:
+    static std::atomic<T*> s_ptr;
+    static void CleanUp();
 };
 
 template<class T>
@@ -23,14 +26,14 @@ T* Singleton<T>::GetInstance()
 {
     static std::mutex s_mutex;
 
-    T *tmp = s_ptr.load(std::memory_order_acquire);
+    T* tmp = s_ptr.load(std::memory_order_acquire);
 
-    if(!tmp)
+    if (!tmp)
     {
         std::lock_guard<std::mutex> lock(s_mutex);
         tmp = s_ptr.load(std::memory_order_relaxed);
 
-        if(!tmp)
+        if (!tmp)
         {
             tmp = new T();
             s_ptr.store(tmp, std::memory_order_release);
